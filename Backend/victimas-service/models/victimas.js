@@ -7,108 +7,145 @@ module.exports = (sequelize) => {
       primaryKey: true,
       autoIncrement: true
     },
-    nombreCompleto: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    fechaNacimiento: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    },
-    edad: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    tipoDocumento: {
-      type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    otroTipoDocumento: {
-      type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    numeroDocumento: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    documentoExpedido: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    sexo: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    lgtbi: {
-      type: DataTypes.STRING(2),
-      allowNull: false,
-      defaultValue: 'NO'
-    },
-    cualLgtbi: {
-      type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    otroGeneroIdentificacion: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      field: 'otro_genero_identificacion'
-    },
-    estadoCivil: {
-      type: DataTypes.STRING(20),
-      allowNull: true
-    },
-    direccion: {
-      type: DataTypes.STRING(200),
-      allowNull: true
-    },
-    barrio: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    ocupacion: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    estudios: {
-      type: DataTypes.STRING(100),
-      allowNull: true
-    },
-    aparentescoConVictimario: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      field: 'aparentesco_victimario'
-    },
-    telefono: {
-      type: DataTypes.STRING(15),
-      allowNull: true
-    },
-    correo: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    tipoVictimaId: {
+    medidaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'tipo_victima_id'
+      field: 'medida_id'  
     },
     comisariaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'comisaria_id'
+      field: 'comisaria_id'  
     },
-    medidaId: {
+    tipoVictimaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'medida_id'
+      field: 'tipo_victima_id'  
+    },
+    nombreCompleto: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      field: 'nombreCompleto'
+    },
+    fechaNacimiento: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: 'fechaNacimiento'
+    },
+    edad: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'edad'
+    },
+    tipoDocumento: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      field: 'tipoDocumento'
+    },
+    otroTipoDocumento: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'otroTipoDocumento'
+    },
+    numeroDocumento: {
+      type: DataTypes.STRING(10),
+      allowNull: false,
+      field: 'numeroDocumento'
+    },
+    documentoExpedido: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'documentoExpedido'
+    },
+    sexo: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      field: 'sexo'
+    },
+    lgtbi: {
+      type: DataTypes.STRING(2),
+      allowNull: false,
+      defaultValue: 'NO',
+      field: 'lgtbi'
+    },
+    cualLgtbi: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'cualLgtbi'
+    },
+    etnia: {
+      type: DataTypes.STRING(2),
+      allowNull: false,
+      defaultValue: 'NO',
+      field: 'etnia'
+    },
+    cualEtnia: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'cual_etnia'
+    },
+    otroGeneroIdentificacion: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'otro_genero_identificacion'  
+    },
+    telefono: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'telefono'
+    },
+    telefonoAlternativo: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'telefono_alternativo'
+    },
+    correo: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'correo'
+    },
+    estratoSocioeconomico: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true,
+      field: 'estrato_socioeconomico'
+    },
+    estadoCivil: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'estadoCivil'
+    },
+    barrio: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'barrio'
+    },
+    direccion: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      field: 'direccion'
+    },
+    ocupacion: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'ocupacion'
+    },
+    estudios: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'estudios'
+    },
+    aparentescoConVictimario: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      field: 'aparentescoConVictimario',
+      defaultValue: 'NO ESPECIFICADO'
     }
   }, {
     tableName: "victimas",
-    timestamps: true,
-    createdAt: 'fecha_creacion',
-    updatedAt: 'fecha_actualizacion'
+    timestamps: true, 
+    createdAt: 'createdAt',  
+    updatedAt: 'updatedAt',  
+    underscored: false
   });
 
   return Victimas;

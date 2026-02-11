@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "comisarias-martin",
   "version": "1.0.0",
   "description": "proyecto-microservicios/\r │\r ├── gateway/\r │   ├── server.js\r │   └── routes/\r │\r ├── roles-service/\r │   ├── models/\r │   │   └── role.model.js\r │   ├── routes/\r │   │   └── role.routes.js\r │   ├── controllers/\r │   │   └── role.controller.js\r │   ├── database/\r │   │   └── config.js\r │   └── server.js\r │\r ├── comisaria-service/\r │   ├── models/\r │   │   └── comisaria.model.js\r │   ├── routes/\r │   │   └── comisaria.routes.js\r │   ├── controllers/\r │   │   └── comisaria.controller.js\r │   └── server.js\r │\r ├── usuarios-service/\r │   ├── models/\r │   │   └── usuario.model.js\r │   ├── routes/\r │   │   └── usuario.routes.js\r │   ├── controllers/\r │   │   └── usuario.controller.js\r │   └── server.js\r │\r ├── medidas-service/\r │   ├── models/\r │   │   └── medida.model.js\r │   ├── routes/\r │   │   └── medida.routes.js\r │   ├── controllers/\r │   │   └── medida.controller.js\r │   └── server.js\r │\r └── docker-compose.yml",
@@ -13,8 +13,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mysql2": "^3.15.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.16.0",
     "sequelize": "^6.37.7"
   }
 }

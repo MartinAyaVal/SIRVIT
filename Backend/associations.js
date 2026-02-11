@@ -6,12 +6,13 @@ function setupAssociations(models) {
     Medidas,
     Victimas,
     Victimarios,
-    TipoVictima
+    TipoVictima,
+    TipoVictimario
   } = models;
 
   console.log('🔗 Configurando asociaciones...');
 
-  // 1. Usuario ↔ Rol (N:1)
+  // ===== 1. USUARIO - ROL =====
   Usuario.belongsTo(Rol, {
     foreignKey: 'rolId',
     as: 'rol'
@@ -21,7 +22,7 @@ function setupAssociations(models) {
     as: 'usuarios'
   });
 
-  // 2. Usuario ↔ Comisaria (N:1)
+  // ===== 2. USUARIO - COMISARÍA =====
   Usuario.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -31,7 +32,7 @@ function setupAssociations(models) {
     as: 'usuarios'
   });
 
-  // 3. Medidas ↔ Comisaria (N:1)
+  // ===== 3. MEDIDAS - COMISARÍA =====
   Medidas.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -41,7 +42,7 @@ function setupAssociations(models) {
     as: 'medidas'
   });
 
-  // 4. Medidas ↔ Usuario (N:1) - Usuario que registra la medida
+  // ===== 4. MEDIDAS - USUARIO (CREADOR) =====
   Medidas.belongsTo(Usuario, {
     foreignKey: 'usuarioId',
     as: 'usuario'
@@ -51,27 +52,59 @@ function setupAssociations(models) {
     as: 'medidasRegistradas'
   });
 
-  // 5. Medidas ↔ Victimarios (N:1) - ❌ CORRECCIÓN: Un victimario puede tener múltiples medidas
-  Medidas.belongsTo(Victimarios, {
-    foreignKey: 'victimarioId',
-    as: 'victimario'
+  // ===== 5. MEDIDAS - USUARIO (ÚLTIMA EDICIÓN) =====
+  Medidas.belongsTo(Usuario, {
+    foreignKey: 'usuarioUltimaEdicionId',
+    as: 'usuarioUltimaEdicion',
+    allowNull: true
   });
-  Victimarios.hasMany(Medidas, {
-    foreignKey: 'victimarioId',
-    as: 'medidas'
+  Usuario.hasMany(Medidas, {
+    foreignKey: 'usuarioUltimaEdicionId',
+    as: 'medidasEditadas'
   });
 
-  // 6. Medidas ↔ Victimas (1:N)
-  Medidas.hasMany(Victimas, {
+  // ===== 6. VICTIMARIOS - MEDIDAS (¡CAMBIO IMPORTANTE!) =====
+  // Ahora los victimarios pertenecen a medidas (1:N en lugar de 1:1)
+  Victimarios.belongsTo(Medidas, {
     foreignKey: 'medidaId',
-    as: 'victimas'
+    as: 'medida'
   });
+  Medidas.hasMany(Victimarios, {
+    foreignKey: 'medidaId',
+    as: 'victimarios'  // Cambiado de singular a plural
+  });
+
+  // ===== 7. VICTIMARIOS - TIPO VICTIMARIO =====
+  Victimarios.belongsTo(TipoVictimario, {
+    foreignKey: 'tipoVictimarioId',
+    as: 'tipoVictimario'
+  });
+  TipoVictimario.hasMany(Victimarios, {
+    foreignKey: 'tipoVictimarioId',
+    as: 'victimarios'
+  });
+
+  // ===== 8. VICTIMARIOS - COMISARÍA =====
+  Victimarios.belongsTo(Comisaria, {
+    foreignKey: 'comisariaId',
+    as: 'comisaria'
+  });
+  Comisaria.hasMany(Victimarios, {
+    foreignKey: 'comisariaId',
+    as: 'victimarios'
+  });
+
+  // ===== 9. VÍCTIMAS - MEDIDAS =====
   Victimas.belongsTo(Medidas, {
     foreignKey: 'medidaId',
     as: 'medida'
   });
+  Medidas.hasMany(Victimas, {
+    foreignKey: 'medidaId',
+    as: 'victimas'
+  });
 
-  // 7. Victimas ↔ TipoVictima (N:1)
+  // ===== 10. VÍCTIMAS - TIPO VÍCTIMA =====
   Victimas.belongsTo(TipoVictima, {
     foreignKey: 'tipoVictimaId',
     as: 'tipoVictima'
@@ -81,7 +114,7 @@ function setupAssociations(models) {
     as: 'victimas'
   });
 
-  // 8. Victimas ↔ Comisaria (N:1)
+  // ===== 11. VÍCTIMAS - COMISARÍA =====
   Victimas.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -91,18 +124,13 @@ function setupAssociations(models) {
     as: 'victimas'
   });
 
-  // 9. Victimarios ↔ Comisaria (N:1) - Nueva relación
-  Victimarios.belongsTo(Comisaria, {
-    foreignKey: 'comisariaId',
-    as: 'comisaria',
-    allowNull: true
-  });
-  Comisaria.hasMany(Victimarios, {
-    foreignKey: 'comisariaId',
-    as: 'victimarios'
-  });
-
   console.log('✅ Asociaciones configuradas correctamente');
+  
+  // Verificar aliases únicos
+  console.log('🔍 Aliases configurados:');
+  console.log('   Medidas -> comisaria, usuario, usuarioUltimaEdicion, victimarios, victimas');
+  console.log('   Victimarios -> medida, tipoVictimario, comisaria');
+  console.log('   Victimas -> medida, tipoVictima, comisaria');
 }
 
 module.exports = setupAssociations;

@@ -18,12 +18,15 @@ exports.getVictimas = async (req, res) => {
   }
 };
 
-// Crear victima - versión actualizada para formulario
+// Crear victima
 exports.createVictima = async (req, res) => {
   try {
     console.log('📥 Datos recibidos para crear víctima:', req.body);
     
     const {
+      medidaId,
+      comisariaId,
+      tipoVictimaId,
       nombreCompleto,
       fechaNacimiento,
       edad,
@@ -34,28 +37,30 @@ exports.createVictima = async (req, res) => {
       sexo,
       lgtbi,
       cualLgtbi,
+      etnia,
+      cualEtnia,
       otroGeneroIdentificacion,
+      telefono,
+      telefonoAlternativo,
+      correo,
+      estratoSocioeconomico,
       estadoCivil,
-      direccion,
       barrio,
+      direccion,
       ocupacion,
       estudios,
-      aparentescoConVictimario,
-      telefono,
-      correo,
-      tipoVictimaId,
-      comisariaId,
-      medidaId
+      aparentescoConVictimario
     } = req.body;
 
     // Validación de campos requeridos
     const camposRequeridos = [
-      'nombreCompleto', 'fechaNacimiento', 'edad', 'tipoDocumento', 
-      'numeroDocumento', 'sexo', 'tipoVictimaId', 'comisariaId', 'medidaId'
+      'medidaId', 'comisariaId', 'tipoVictimaId', 'nombreCompleto', 
+      'fechaNacimiento', 'edad', 'tipoDocumento', 'numeroDocumento', 
+      'sexo', 'lgtbi', 'etnia'
     ];
     
     for (const campo of camposRequeridos) {
-      if (!req.body[campo]) {
+      if (!req.body[campo] && req.body[campo] !== '') {
         return res.status(400).json({
           success: false,
           message: `El campo '${campo}' es requerido`
@@ -63,8 +68,33 @@ exports.createVictima = async (req, res) => {
       }
     }
 
+    // Validación adicional para estrato socioeconómico
+    if (estratoSocioeconomico !== undefined && estratoSocioeconomico !== null && estratoSocioeconomico !== '') {
+      const estrato = parseInt(estratoSocioeconomico);
+      if (isNaN(estrato) || estrato < 1 || estrato > 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'El estrato socioeconómico debe ser un número entre 1 y 6'
+        });
+      }
+    }
+
+    // Validación de correo electrónico si se proporciona
+    if (correo && correo.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(correo)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El formato del correo electrónico no es válido'
+        });
+      }
+    }
+
     // Crear la víctima
     const victima = await Victima.create({
+      medidaId: parseInt(medidaId),
+      comisariaId: parseInt(comisariaId),
+      tipoVictimaId: parseInt(tipoVictimaId),
       nombreCompleto,
       fechaNacimiento,
       edad: parseInt(edad) || 0,
@@ -75,18 +105,19 @@ exports.createVictima = async (req, res) => {
       sexo,
       lgtbi: lgtbi || 'NO',
       cualLgtbi: cualLgtbi || null,
+      etnia: etnia || 'NO',
+      cualEtnia: cualEtnia || null,
       otroGeneroIdentificacion: otroGeneroIdentificacion || null,
+      telefono: telefono || null,
+      telefonoAlternativo: telefonoAlternativo || null,
+      correo: correo ? correo.trim() : null,
+      estratoSocioeconomico: (estratoSocioeconomico && estratoSocioeconomico !== '') ? parseInt(estratoSocioeconomico) : null,
       estadoCivil: estadoCivil || null,
-      direccion: direccion || null,
       barrio: barrio || null,
+      direccion: direccion || null,
       ocupacion: ocupacion || null,
       estudios: estudios || null,
-      aparentescoConVictimario: aparentescoConVictimario || null,
-      telefono: telefono || null,
-      correo: correo || null,
-      tipoVictimaId: parseInt(tipoVictimaId),
-      comisariaId: parseInt(comisariaId),
-      medidaId: parseInt(medidaId)
+      aparentescoConVictimario: aparentescoConVictimario || null
     });
     
     console.log('✅ Víctima creada exitosamente:', victima.id);
@@ -108,7 +139,7 @@ exports.createVictima = async (req, res) => {
   }
 };
 
-// Crear múltiples víctimas (para medidas completas)
+// Crear múltiples víctimas para medida completa
 exports.createMultipleVictimas = async (req, res) => {
   try {
     const { victimas } = req.body;
@@ -120,7 +151,78 @@ exports.createMultipleVictimas = async (req, res) => {
       });
     }
     
-    const victimasCreadas = await Victima.bulkCreate(victimas, {
+    // Validaciones para cada víctima
+    for (const victimaData of victimas) {
+      // Validar campos requeridos
+      const camposRequeridos = [
+        'medidaId', 'comisariaId', 'tipoVictimaId', 'nombreCompleto', 
+        'fechaNacimiento', 'edad', 'tipoDocumento', 'numeroDocumento', 
+        'sexo', 'lgtbi', 'etnia'
+      ];
+      
+      for (const campo of camposRequeridos) {
+        if (!victimaData[campo] && victimaData[campo] !== '') {
+          return res.status(400).json({
+            success: false,
+            message: `El campo '${campo}' es requerido para todas las víctimas`
+          });
+        }
+      }
+      
+      // Validar estrato socioeconómico
+      if (victimaData.estratoSocioeconomico !== undefined && victimaData.estratoSocioeconomico !== null && victimaData.estratoSocioeconomico !== '') {
+        const estrato = parseInt(victimaData.estratoSocioeconomico);
+        if (isNaN(estrato) || estrato < 1 || estrato > 6) {
+          return res.status(400).json({
+            success: false,
+            message: `El estrato socioeconómico debe ser un número entre 1 y 6 para la víctima: ${victimaData.nombreCompleto}`
+          });
+        }
+      }
+      
+      // Validar correo electrónico
+      if (victimaData.correo && victimaData.correo.trim() !== '') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(victimaData.correo)) {
+          return res.status(400).json({
+            success: false,
+            message: `El formato del correo electrónico no es válido para la víctima: ${victimaData.nombreCompleto}`
+          });
+        }
+      }
+    }
+    
+    // Procesar datos para bulkCreate
+    const victimasProcesadas = victimas.map(victimaData => ({
+      medidaId: parseInt(victimaData.medidaId),
+      comisariaId: parseInt(victimaData.comisariaId),
+      tipoVictimaId: parseInt(victimaData.tipoVictimaId),
+      nombreCompleto: victimaData.nombreCompleto,
+      fechaNacimiento: victimaData.fechaNacimiento,
+      edad: parseInt(victimaData.edad) || 0,
+      tipoDocumento: victimaData.tipoDocumento,
+      otroTipoDocumento: victimaData.otroTipoDocumento || null,
+      numeroDocumento: victimaData.numeroDocumento.toString(),
+      documentoExpedido: victimaData.documentoExpedido || null,
+      sexo: victimaData.sexo,
+      lgtbi: victimaData.lgtbi || 'NO',
+      cualLgtbi: victimaData.cualLgtbi || null,
+      etnia: victimaData.etnia || 'NO',
+      cualEtnia: victimaData.cualEtnia || null,
+      otroGeneroIdentificacion: victimaData.otroGeneroIdentificacion || null,
+      telefono: victimaData.telefono || null,
+      telefonoAlternativo: victimaData.telefonoAlternativo || null,
+      correo: victimaData.correo ? victimaData.correo.trim() : null,
+      estratoSocioeconomico: (victimaData.estratoSocioeconomico && victimaData.estratoSocioeconomico !== '') ? parseInt(victimaData.estratoSocioeconomico) : null,
+      estadoCivil: victimaData.estadoCivil || null,
+      barrio: victimaData.barrio || null,
+      direccion: victimaData.direccion || null,
+      ocupacion: victimaData.ocupacion || null,
+      estudios: victimaData.estudios || null,
+      aparentescoConVictimario: victimaData.aparentescoConVictimario || null
+    }));
+    
+    const victimasCreadas = await Victima.bulkCreate(victimasProcesadas, {
       validate: true,
       individualHooks: true
     });
@@ -169,7 +271,7 @@ exports.getVictimaById = async (req, res) => {
   }
 };
 
-// Actualizar victima por Id - versión actualizada
+// Actualizar victima por Id
 exports.updateVictima = async (req, res) => {
   try {
     const { id } = req.params;
@@ -182,22 +284,56 @@ exports.updateVictima = async (req, res) => {
       });
     }
 
+    // Validación para estrato socioeconómico si se envía
+    if (req.body.estratoSocioeconomico !== undefined && req.body.estratoSocioeconomico !== null && req.body.estratoSocioeconomico !== '') {
+      const estrato = parseInt(req.body.estratoSocioeconomico);
+      if (isNaN(estrato) || estrato < 1 || estrato > 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'El estrato socioeconómico debe ser un número entre 1 y 6'
+        });
+      }
+    }
+
+    // Validación de correo electrónico si se proporciona
+    if (req.body.correo !== undefined && req.body.correo && req.body.correo.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.correo)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El formato del correo electrónico no es válido'
+        });
+      }
+    }
+
     // Actualizar solo los campos que vienen en el body
     const camposPermitidos = [
-      'nombreCompleto', 'fechaNacimiento', 'edad', 'tipoDocumento', 
-      'otroTipoDocumento', 'numeroDocumento', 'documentoExpedido', 
-      'sexo', 'lgtbi', 'cualLgtbi', 'otroGeneroIdentificacion',
-      'estadoCivil', 'direccion', 'barrio', 'ocupacion', 'estudios',
-      'aparentescoConVictimario', 'telefono', 'correo', 'tipoVictimaId',
-      'comisariaId', 'medidaId'
+      'medidaId', 'comisariaId', 'tipoVictimaId', 'nombreCompleto', 
+      'fechaNacimiento', 'edad', 'tipoDocumento', 'otroTipoDocumento', 
+      'numeroDocumento', 'documentoExpedido', 'sexo', 'lgtbi', 'cualLgtbi',
+      'etnia', 'cualEtnia', 'otroGeneroIdentificacion', 'telefono', 
+      'telefonoAlternativo', 'correo', 'estratoSocioeconomico',
+      'estadoCivil', 'barrio', 'direccion', 'ocupacion', 'estudios', 
+      'aparentescoConVictimario'
     ];
     
     const datosActualizar = {};
     for (const campo of camposPermitidos) {
       if (req.body[campo] !== undefined) {
-        if (campo === 'edad' || campo === 'tipoVictimaId' || campo === 'comisariaId' || campo === 'medidaId') {
-          datosActualizar[campo] = parseInt(req.body[campo]) || 0;
-        } else {
+        // Campos numéricos
+        if (campo === 'medidaId' || campo === 'comisariaId' || campo === 'tipoVictimaId' || campo === 'edad' || campo === 'estratoSocioeconomico') {
+          datosActualizar[campo] = (req.body[campo] && req.body[campo] !== '') ? parseInt(req.body[campo]) : null;
+        } 
+        // Campos de texto que pueden ser nulos
+        else if (campo === 'correo' || campo === 'telefono' || campo === 'telefonoAlternativo') {
+          datosActualizar[campo] = req.body[campo] ? req.body[campo].trim() : null;
+        }
+        // Campos booleanos/lógicos
+        else if (campo === 'lgtbi' || campo === 'etnia') {
+          datosActualizar[campo] = req.body[campo] || 'NO';
+        }
+        // Otros campos
+        else {
           datosActualizar[campo] = req.body[campo];
         }
       }
@@ -205,10 +341,13 @@ exports.updateVictima = async (req, res) => {
     
     await victima.update(datosActualizar);
     
+    // Obtener la víctima actualizada
+    const victimaActualizada = await Victima.findByPk(id);
+    
     res.json({
       success: true,
       message: 'Víctima actualizada exitosamente',
-      data: victima
+      data: victimaActualizada
     });
     
   } catch (error) {
@@ -293,7 +432,10 @@ exports.searchVictimas = async (req, res) => {
       where: {
         [sequelize.Op.or]: [
           { nombreCompleto: { [sequelize.Op.like]: `%${query}%` } },
-          { numeroDocumento: { [sequelize.Op.like]: `%${query}%` } }
+          { numeroDocumento: { [sequelize.Op.like]: `%${query}%` } },
+          { telefono: { [sequelize.Op.like]: `%${query}%` } },
+          { telefonoAlternativo: { [sequelize.Op.like]: `%${query}%` } },
+          { correo: { [sequelize.Op.like]: `%${query}%` } }
         ]
       },
       limit: 50,
@@ -311,6 +453,58 @@ exports.searchVictimas = async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: 'Error al buscar víctimas', 
+      error: error.message 
+    });
+  }
+};
+
+// Obtener víctimas por comisaría
+exports.getVictimasByComisaria = async (req, res) => {
+  try {
+    const { comisariaId } = req.params;
+    
+    const victimas = await Victima.findAll({
+      where: { comisariaId: parseInt(comisariaId) },
+      order: [['createdAt', 'DESC']]
+    });
+    
+    res.json({
+      success: true,
+      count: victimas.length,
+      data: victimas
+    });
+    
+  } catch (error) {
+    console.error('Error en getVictimasByComisaria:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al obtener víctimas por comisaría', 
+      error: error.message 
+    });
+  }
+};
+
+// Obtener víctimas por tipo de víctima
+exports.getVictimasByTipo = async (req, res) => {
+  try {
+    const { tipoVictimaId } = req.params;
+    
+    const victimas = await Victima.findAll({
+      where: { tipoVictimaId: parseInt(tipoVictimaId) },
+      order: [['createdAt', 'DESC']]
+    });
+    
+    res.json({
+      success: true,
+      count: victimas.length,
+      data: victimas
+    });
+    
+  } catch (error) {
+    console.error('Error en getVictimasByTipo:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al obtener víctimas por tipo', 
       error: error.message 
     });
   }

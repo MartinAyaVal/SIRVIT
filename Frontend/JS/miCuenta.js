@@ -1,9 +1,16 @@
-// ===== VARIABLES GLOBALES =====
 let usuarioData = null;
 let modoEdicion = false;
 let datosOriginales = {};
 
-// ===== FUNCIONES DEL LOADER =====
+(function() {
+    window.scrollTo(0, 0);
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            window.scrollTo(0, 0);
+        }, 100);
+    });
+})();
+
 function showLoader(text = 'Cargando información...') {
     const loader = document.getElementById('loaderOverlay');
     const loaderText = document.getElementById('loaderText');
@@ -20,7 +27,6 @@ function hideLoader() {
     }
 }
 
-// ===== FUNCIONES DE NOTIFICACIONES SWEETALERT =====
 async function mostrarExito(mensaje, titulo = '¡Éxito!') {
     return Swal.fire({
         title: titulo,
@@ -86,25 +92,20 @@ async function mostrarConfirmacionCritica(pregunta, titulo = '⚠️ Cambio de C
     return result.isConfirmed;
 }
 
-// ===== FUNCIÓN DE CERRAR SESIÓN =====
 function ejecutarCierreSesion(mensaje = 'Sesión cerrada por seguridad') {
     console.log('🔒 Ejecutando cierre de sesión...');
-    
-    // Asegurarse de ocultar cualquier loader visible
+
     hideLoader();
-    
-    // Limpiar almacenamiento local
+
     localStorage.removeItem('sirevif_token');
     localStorage.removeItem('sirevif_usuario');
     sessionStorage.clear();
-    
-    // Redirigir al login
+
     setTimeout(() => {
         window.location.href = '/Frontend/HTML/login.html';
     }, 500);
 }
 
-// ===== CÓDIGO DE TOGGLE DE CONTRASEÑA MEJORADO =====
 function setupPasswordToggle() {
     const passwordToggle = document.getElementById('passwordToggle');
     const mostrar = document.getElementById('mostrar');
@@ -115,18 +116,15 @@ function setupPasswordToggle() {
         console.error('❌ Elementos del toggle no encontrados');
         return;
     }
-    
-    // Inicialmente ocultar el toggle (solo visible en modo edición)
+
     passwordToggle.style.display = 'none';
-    
-    // Función para mostrar contraseña
+
     mostrar.addEventListener('click', function() {
         input.type = 'text';
         mostrar.style.display = 'none';
         ocultar.style.display = 'inline';
     });
-    
-    // Función para ocultar contraseña
+
     ocultar.addEventListener('click', function() {
         input.type = 'password';
         mostrar.style.display = 'inline';
@@ -136,7 +134,6 @@ function setupPasswordToggle() {
     console.log('✅ Toggle de contraseña configurado correctamente');
 }
 
-// Mostrar/Ocultar toggle según modo
 function togglePasswordVisibility(mostrar) {
     const passwordToggle = document.getElementById('passwordToggle');
     if (passwordToggle) {
@@ -144,13 +141,11 @@ function togglePasswordVisibility(mostrar) {
     }
 }
 
-// ===== FUNCIONES PRINCIPALES =====
 async function cargarInformacionUsuario() {
     console.log('🔍 Iniciando carga de información del usuario...');
     showLoader();
     
     try {
-        // Obtener token y datos del localStorage
         const token = localStorage.getItem('sirevif_token');
         const usuarioStorage = localStorage.getItem('sirevif_usuario');
         
@@ -158,8 +153,7 @@ async function cargarInformacionUsuario() {
         
         if (!token || !usuarioStorage) {
             console.error('❌ ERROR: No hay sesión activa en localStorage');
-            
-            // Mostrar ventana emergente en lugar de alert
+
             await Swal.fire({
                 title: 'Sesión no iniciada',
                 text: 'No se ha detectado una sesión activa. Serás redirigido a la página de inicio de sesión.',
@@ -181,7 +175,6 @@ async function cargarInformacionUsuario() {
         
         console.log('🔍 Usuario completo:', usuarioData);
         
-        // Cargar datos en el formulario
         const campos = {
             'nombreUsuario': usuarioData.nombre || '',
             'documentoUsuario': usuarioData.documento || '',
@@ -192,7 +185,7 @@ async function cargarInformacionUsuario() {
             'contraseñaUsuario': '••••••••'
         };
         
-        // Llenar cada campo
+
         for (const [id, valor] of Object.entries(campos)) {
             const elemento = document.getElementById(id);
             if (elemento) {
@@ -357,9 +350,8 @@ function desactivarModoEdicion() {
     if (guardarBtn) guardarBtn.style.display = 'none';
 }
 
-// ===== VALIDACIONES POR SEPARADO =====
 function validarCorreo(correo) {
-    if (!correo) return { valido: true, mensaje: '' }; // No es obligatorio si no se cambia
+    if (!correo) return { valido: true, mensaje: '' }; 
     
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(correo)) {
@@ -372,9 +364,8 @@ function validarCorreo(correo) {
 }
 
 function validarTelefono(telefono) {
-    if (!telefono) return { valido: true, mensaje: '' }; // No es obligatorio si no se cambia
-    
-    // Solo números, mínimo 7, máximo 15 dígitos (más flexible)
+    if (!telefono) return { valido: true, mensaje: '' }; 
+
     const regex = /^[0-9]{7,15}$/;
     if (!regex.test(telefono)) {
         return { 
@@ -386,7 +377,6 @@ function validarTelefono(telefono) {
 }
 
 function validarCargo(cargo) {
-    // El cargo puede ser cualquier texto o estar vacío, hasta 100 caracteres
     if (cargo && cargo.trim().length > 100) {
         return { 
             valido: false, 
@@ -396,7 +386,6 @@ function validarCargo(cargo) {
     return { valido: true, mensaje: '' };
 }
 
-// ===== FUNCIÓN PRINCIPAL PARA GUARDAR CAMBIOS =====
 async function guardarCambios() {
     console.log('💾 Guardando cambios...');
     
@@ -427,8 +416,7 @@ async function guardarCambios() {
         });
         
         console.log('📊 Datos originales:', datosOriginales);
-        
-        // ===== VALIDACIONES INDIVIDUALES =====
+
         const validaciones = [];
         
         // Validar campos que se están cambiando
@@ -466,8 +454,7 @@ async function guardarCambios() {
             
             throw new Error(validaciones.join('\n'));
         }
-        
-        // ===== CONFIRMACIÓN CRÍTICA PARA CAMBIO DE CONTRASEÑA =====
+
         let cambioContraseñaConfirmado = true;
         
         if (nuevaContraseña && nuevaContraseña !== '••••••••') {
@@ -487,40 +474,33 @@ async function guardarCambios() {
             
             console.log('✅ Confirmado: Cambiando contraseña propia');
         }
-        
-        // ===== PREPARAR DATOS PARA ENVIAR =====
-        // IMPORTANTE: El backend necesita TODOS los campos requeridos
-        // Enviar todos los campos con sus valores actuales
+
         const datosParaEnviar = {
             nombre: datosOriginales.nombre,
             documento: usuarioData.documento || datosOriginales.documento,
-            cargo: nuevoCargo, // El valor actual del formulario
-            correo: nuevoCorreo, // El valor actual del formulario
-            telefono: nuevoTelefono, // El valor actual del formulario
+            cargo: nuevoCargo, 
+            correo: nuevoCorreo, 
+            telefono: nuevoTelefono, 
             comisaria_rol: datosOriginales.comisaria_rol
         };
-        
-        // Solo incluir contraseña si se proporcionó una nueva
+
         if (nuevaContraseña && nuevaContraseña !== '••••••••') {
             datosParaEnviar.contraseña = nuevaContraseña;
         }
         
         console.log('📤 Datos completos para enviar al backend:', datosParaEnviar);
-        
-        // Verificar que todos los campos requeridos estén presentes
+
         const camposRequeridos = ['nombre', 'documento', 'cargo', 'correo', 'telefono', 'comisaria_rol'];
         const camposFaltantes = camposRequeridos.filter(campo => !datosParaEnviar[campo] && datosParaEnviar[campo] !== '');
         
         if (camposFaltantes.length > 0) {
             throw new Error(`Faltan campos requeridos: ${camposFaltantes.join(', ')}`);
         }
-        
-        // ===== ENVIAR AL BACKEND =====
+
         if (!usuarioData || !usuarioData.id) {
             throw new Error('No se encontró ID del usuario');
         }
-        
-        // SOLO AHORA mostrar loader (después de confirmaciones)
+
         showLoader('Guardando cambios...');
         
         console.log(`📤 Enviando PUT a: http://localhost:8080/usuarios/${usuarioData.id}`);
@@ -535,8 +515,7 @@ async function guardarCambios() {
         });
         
         console.log('📥 Respuesta del servidor - Status:', response.status);
-        
-        // Leer respuesta como texto primero
+
         const responseText = await response.text();
         console.log('📥 Respuesta del servidor - Text:', responseText);
         
@@ -549,15 +528,13 @@ async function guardarCambios() {
         }
         
         if (!response.ok) {
-            hideLoader(); // Ocultar loader si hay error
+            hideLoader(); 
             
             let errorMsg = data.message || `Error ${response.status} al actualizar usuario`;
-            
-            // Mensajes más específicos según el error
+
             if (response.status === 400) {
                 errorMsg = 'Error en los datos: ' + (data.message || 'Verifica que todos los campos estén completos');
-                
-                // Depuración adicional
+
                 console.error('❌ Error 400 - Detalles:', {
                     datosEnviados: datosParaEnviar,
                     respuesta: data,
@@ -566,7 +543,7 @@ async function guardarCambios() {
                 
             } else if (response.status === 401) {
                 errorMsg = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-                // Redirigir al login
+
                 setTimeout(() => {
                     window.location.href = '/Frontend/HTML/login.html';
                 }, 3000);
@@ -578,11 +555,8 @@ async function guardarCambios() {
         }
         
         console.log('📥 Respuesta del servidor - Data:', data);
-        
-        // ===== ACTUALIZAR LOCALSTORAGE Y UI =====
-        // Actualizar localStorage con nuevos datos del backend
+
         if (data && (data.id || data.success)) {
-            // Si el backend devuelve datos completos, usarlos
             const usuarioActualizado = data.data || data;
             usuarioData = {
                 ...usuarioData,
@@ -590,15 +564,12 @@ async function guardarCambios() {
             };
             console.log('✅ Usuario actualizado con datos del backend:', usuarioData);
         } else {
-            // Si no, actualizar los campos localmente
             usuarioData.correo = nuevoCorreo;
             usuarioData.telefono = nuevoTelefono;
             usuarioData.cargo = nuevoCargo;
         }
         
         localStorage.setItem('sirevif_usuario', JSON.stringify(usuarioData));
-        
-        // Actualizar header si cambió el cargo
         const nombreHeader = document.getElementById('nombreUsuarioHeader');
         if (nombreHeader) {
             let textoHeader = usuarioData.nombre || 'Usuario';
@@ -609,22 +580,19 @@ async function guardarCambios() {
             }
             nombreHeader.textContent = textoHeader;
         }
-        
-        // ===== MANEJO DE CAMBIO DE CONTRASEÑA =====
+
         if (nuevaContraseña && nuevaContraseña !== '••••••••' && cambioContraseñaConfirmado) {
             hideLoader();
             await mostrarExito('Contraseña actualizada. Cerrando sesión...', 'Cambio Exitoso');
-            
-            // Cerrar sesión después de breve delay
+
             setTimeout(() => {
                 ejecutarCierreSesion('Tu contraseña ha sido cambiada. Por seguridad, debes iniciar sesión nuevamente.');
             }, 0);
             
-            return; // Salir de la función - no continuar con desactivarModoEdicion
+            return; 
         }
         
-        // ===== ÉXITO SIN CAMBIO DE CONTRASEÑA =====
-        // Actualizar datos originales
+
         datosOriginales = {
             nombre: usuarioData.nombre,
             correo: usuarioData.correo,
@@ -635,8 +603,7 @@ async function guardarCambios() {
         
         hideLoader();
         await mostrarExito('✅ Información actualizada correctamente');
-        
-        // Desactivar modo edición después de mostrar éxito
+
         desactivarModoEdicion();
         
         console.log('✅ Cambios guardados exitosamente');
@@ -648,7 +615,7 @@ async function guardarCambios() {
         await mostrarError(error.message || 'Error al guardar cambios');
     }
 }
-// ===== FUNCIÓN PARA RECARGAR DATOS DESDE BACKEND =====
+
 async function forzarRecargaDesdeBackend() {
     console.log('🔄 Forzando recarga de datos desde backend...');
     showLoader('Actualizando información...');
@@ -703,7 +670,6 @@ async function forzarRecargaDesdeBackend() {
     }
 }
 
-// ===== FUNCIÓN DE LOGOUT =====
 async function logout() {
     const confirmado = await mostrarConfirmacion(
         '¿Estás seguro de que quieres cerrar sesión?',
@@ -717,7 +683,6 @@ async function logout() {
     }
 }
 
-// ===== FUNCIÓN DE DEPURACIÓN PARA CONSOLA =====
 window.depurarUsuarioData = function() {
     console.log('=== DEPURACIÓN DE USUARIO DATA ===');
     const usuarioStorage = localStorage.getItem('sirevif_usuario');
@@ -737,35 +702,28 @@ window.depurarUsuarioData = function() {
     return usuarioData;
 };
 
-// ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 miCuenta.js inicializado correctamente');
-    
-    // Configurar toggle de contraseña
+
     setupPasswordToggle();
-    
-    // Cargar información al inicio
+
     cargarInformacionUsuario();
-    
-    // Botón editar
+
     const editarBtn = document.getElementById('editarBtn');
     if (editarBtn) {
         editarBtn.addEventListener('click', activarModoEdicion);
     }
-    
-    // Botón cancelar
+
     const cancelarBtn = document.getElementById('cancelarBtn');
     if (cancelarBtn) {
         cancelarBtn.addEventListener('click', desactivarModoEdicion);
     }
-    
-    // Botón guardar
+
     const guardarBtn = document.getElementById('guardarBtn');
     if (guardarBtn) {
         guardarBtn.addEventListener('click', guardarCambios);
     }
-    
-    // Logout
+
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
@@ -773,8 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logout();
         });
     }
-    
-    // También actualizar el modal de cerrar sesión si existe
+
     const modalCerrarSesion = document.getElementById('divCerrarSesion');
     if (modalCerrarSesion) {
         // Ocultar modal al inicio

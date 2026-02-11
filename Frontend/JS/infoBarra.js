@@ -481,6 +481,45 @@ window.SIREVIF.Sesion = {
     }
 };
 
+// Agregar función para mostrar comisaría del usuario
+function mostrarComisariaUsuario() {
+    const usuario = JSON.parse(localStorage.getItem('sirevif_usuario'));
+    const comisariaHeader = document.getElementById('comisariaUsuarioHeader');
+    
+    if (usuario && comisariaHeader) {
+        let textoComisaria = '';
+        
+        if (usuario.rolId === 1) {
+            textoComisaria = 'Administrador';
+        } else {
+            // Mapear comisariaId a nombre
+            const comisarias = {
+                1: 'Comisaría Primera',
+                2: 'Comisaría Segunda',
+                3: 'Comisaría Tercera',
+                4: 'Comisaría Cuarta',
+                5: 'Comisaría Quinta',
+                6: 'Comisaría Sexta'
+            };
+            
+            const comisariaId = usuario.comisariaId || usuario.comisaria_id;
+            textoComisaria = comisarias[comisariaId] || `Comisaría ${comisariaId}`;
+        }
+        
+        comisariaHeader.textContent = textoComisaria;
+        console.log(`📍 Comisaría del usuario: ${textoComisaria}`);
+    }
+}
+
+// Llamar a esta función en la inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    // ... código existente
+    
+    mostrarComisariaUsuario();
+    
+    // ... resto del código
+});
+
 console.log('✅ infoBarra.js cargado (con control de roles y seguridad mejorada)');
 console.log('📋 Funciones públicas disponibles:');
 console.log('   • SIREVIF.Sesion.ejecutarCierreSesion() - Para cerrar sesión programáticamente');

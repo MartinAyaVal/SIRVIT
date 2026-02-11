@@ -13,7 +13,7 @@ body {
 
 .tituloUsuarios {
     color: white;
-    margin-left: 43%;
+    margin-left: 45%;
     padding: 30px;
 }
 
@@ -30,22 +30,17 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     margin-left: 19.5%;
     border-radius: 12px;
-    padding: 20px;
+    padding: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-left: 6px solid #62c681;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.seccionUsuarios:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .tituloSec {
     font-size: 1.4rem;
     color: #138035;
     margin: 0 0 15px 0;
-    padding-bottom: 10px;
+    padding: 10px;
     border-bottom: 2px solid #e9ecef;
     font-weight: 600;
     text-align: left;
@@ -68,6 +63,7 @@ body {
 }
 
 .usuario-card:hover {
+    transform: translateY(-3px);
     border-color: #138035;
     box-shadow: 0 4px 8px rgba(19, 128, 53, 0.15);
 }
@@ -659,4 +655,28 @@ body {
         width: 200px;
         font-size: 14px;
     }
+}
+
+/* ===== ESTILOS PARA CONTADORES DE USUARIOS ===== */
+.contador-usuarios {
+    font-size: 100%;
+    font-weight: normal;
+    padding: 3px 8px;
+    transition: all 0.3s ease;
+}
+
+.contador-normal {
+    color: #2e7d32;
+}
+
+.contador-limitado {
+    color: #d32f2f;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }

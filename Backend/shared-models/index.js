@@ -7,8 +7,9 @@ const initComisaria = require('../comisaria-service/models/comisarias.js');
 const initUsuario = require('../usuarios-service/models/usuarios.js');
 const initMedidas = require('../medidas-service/models/medidas.js');
 const initVictimas = require('../victimas-service/models/victimas.js');
+const initTipoVictima = require('../victimas-service/models/tipoVictima.js');
 const initVictimarios = require('../victimarios-service/models/victimarios.js');
-const initTipoVictima = require('../tipoVictima-service/models/tipoVictima.js');
+const initTipoVictimario = require('../victimarios-service/models/tipoVictimario.js'); 
 const initRol = require('../roles-service/models/roles.js');
 
 // Inicializar modelos con la conexión central
@@ -19,6 +20,7 @@ const models = {
   Victimas: initVictimas(sequelize),
   Victimarios: initVictimarios(sequelize),
   TipoVictima: initTipoVictima(sequelize),
+  TipoVictimario: initTipoVictimario(sequelize),
   Rol: initRol(sequelize)
 };
 

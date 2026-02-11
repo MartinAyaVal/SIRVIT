@@ -3,6 +3,7 @@ const cors = require('cors');
 const sequelize = require('./db/config.js');
 const usuariosRoutes = require('./routes/usuariosRoutes.js');
 const authRoutes = require('./routes/authRouthes.js');
+const limitesRoutes = require('./routes/limitesRoutes.js');
 require('dotenv').config();
 
 const app = express();
@@ -14,11 +15,22 @@ const allowedOrigins = [
     'http://127.0.0.1:5500',
     'http://localhost:3000',
     'http://localhost:3005',
-    'http://localhost:3006'
+    'http://localhost:3006',
+    'http://localhost:3002' 
 ];
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+        // Permitir requests sin origin (Postman, curl, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log(`❌ Origen bloqueado: ${origin}`);
+            callback(new Error('Origen no permitido por CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-user-documento', 'x-user-rol', 'x-user-nombre', 'x-user-comisaria']
@@ -58,11 +70,12 @@ app.use(express.urlencoded({
     limit: '10mb' 
 }));
 
-// ===== RUTAS =====
+// ===== RUTAS CORREGIDAS =====
 app.use('/auth', authRoutes);
-app.use('/', usuariosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/limites', limitesRoutes); // ¡AGREGA ESTA LÍNEA!
 
-// ===== RUTAS DE PRUEBA =====
+// ===== RUTAS DE PRUEBA Y HEALTH CHECK =====
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -71,12 +84,55 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     endpoints: {
       auth: 'POST /auth/login',
-      usuarios: 'GET /',
-      crearUsuario: 'POST /',
-      obtenerUsuario: 'GET /:id',
-      actualizarUsuario: 'PUT /:id',
-      eliminarUsuario: 'DELETE /:id',
-      cambiarEstado: 'PATCH /:id/estado'
+      usuarios: 'GET /api/usuarios',
+      crearUsuario: 'POST /api/usuarios',
+      obtenerUsuario: 'GET /api/usuarios/:id',
+      actualizarUsuario: 'PUT /api/usuarios/:id',
+      eliminarUsuario: 'DELETE /api/usuarios/:id',
+      cambiarEstado: 'PATCH /api/usuarios/:id/estado',
+      // ¡AGREGA LOS NUEVOS ENDPOINTS DE LÍMITES!
+      limites: 'GET /api/limites',
+      limiteEspecifico: 'GET /api/limites/:comisaria_rol',
+      actualizarLimite: 'PUT /api/limites/:comisaria_rol'
+    }
+  });
+});
+
+// Ruta adicional de debug para verificar estructura
+app.get('/debug-routes', (req, res) => {
+  const routes = [];
+  
+  function printRoutes(layer, prefix = '') {
+    if (layer.route) {
+      const path = prefix + layer.route.path;
+      const methods = Object.keys(layer.route.methods);
+      routes.push({ path, methods });
+    } else if (layer.name === 'router' && layer.handle.stack) {
+      layer.handle.stack.forEach((nestedLayer) => {
+        printRoutes(nestedLayer, prefix);
+      });
+    }
+  }
+  
+  app._router.stack.forEach((layer) => {
+    printRoutes(layer);
+  });
+  
+  res.json({
+    success: true,
+    message: 'Rutas disponibles en el servicio de usuarios',
+    totalRoutes: routes.length,
+    routes: routes.sort((a, b) => a.path.localeCompare(b.path)),
+    gatewayAccess: {
+      listarUsuarios: 'GET http://localhost:8080/usuarios',
+      crearUsuario: 'POST http://localhost:8080/usuarios',
+      obtenerUsuario: 'GET http://localhost:8080/usuarios/:id',
+      actualizarUsuario: 'PUT http://localhost:8080/usuarios/:id',
+      eliminarUsuario: 'DELETE http://localhost:8080/usuarios/:id',
+      cambiarEstado: 'PATCH http://localhost:8080/usuarios/:id/estado',
+      // ¡AGREGA LAS RUTAS DE LÍMITES PARA EL GATEWAY!
+      obtenerLimites: 'GET http://localhost:8080/usuarios/admin/limites',
+      actualizarLimite: 'PUT http://localhost:8080/usuarios/admin/limites/:comisaria_rol'
     }
   });
 });
@@ -113,18 +169,34 @@ sequelize.authenticate()
       console.log("\n" + "=".repeat(60));
       console.log(`🚀 Servicio de usuarios corriendo en: http://localhost:${PORT}`);
       console.log("=".repeat(60));
-      console.log("📋 Endpoints disponibles:");
+      console.log("📋 Endpoints INTERNOS (directo al servicio):");
       console.log(`  🔐 Login:           POST http://localhost:${PORT}/auth/login`);
-      console.log(`  👥 Listar usuarios: GET  http://localhost:${PORT}/`);
-      console.log(`  ➕ Crear usuario:   POST http://localhost:${PORT}/`);
-      console.log(`  👤 Obtener usuario: GET  http://localhost:${PORT}/:id`);
-      console.log(`  ✏️  Actualizar:      PUT  http://localhost:${PORT}/:id`);
-      console.log(`  🗑️  Eliminar:        DEL  http://localhost:${PORT}/:id`);
-      console.log(`  🔄 Cambiar estado:  PATCH http://localhost:${PORT}/:id/estado`);
+      console.log(`  👥 Listar usuarios: GET  http://localhost:${PORT}/api/usuarios`);
+      console.log(`  ➕ Crear usuario:   POST http://localhost:${PORT}/api/usuarios`);
+      console.log(`  👤 Obtener usuario: GET  http://localhost:${PORT}/api/usuarios/:id`);
+      console.log(`  ✏️  Actualizar:      PUT  http://localhost:${PORT}/api/usuarios/:id`);
+      console.log(`  🗑️  Eliminar:        DEL  http://localhost:${PORT}/api/usuarios/:id`);
+      console.log(`  🔄 Cambiar estado:  PATCH http://localhost:${PORT}/api/usuarios/:id/estado`);
+      // ¡AGREGA LOS NUEVOS ENDPOINTS!
+      console.log(`  📊 Obtener límites: GET  http://localhost:${PORT}/api/limites`);
+      console.log(`  ⚙️  Actualizar límite: PUT  http://localhost:${PORT}/api/limites/:comisaria_rol`);
       console.log(`  ❤️  Health check:    GET  http://localhost:${PORT}/health`);
+      console.log(`  🐛 Debug rutas:     GET  http://localhost:${PORT}/debug-routes`);
       console.log("=".repeat(60));
-      console.log("💡 Nota: Este servicio es accedido a través del gateway en:");
-      console.log(`     POST http://localhost:8080/usuarios/auth/login`);
+      console.log("📋 Endpoints EXTERNOS (a través del gateway):");
+      console.log(`  🔐 Login:           POST http://localhost:8080/usuarios/auth/login`);
+      console.log(`  👥 Listar usuarios: GET  http://localhost:8080/usuarios`);
+      console.log(`  ➕ Crear usuario:   POST http://localhost:8080/usuarios`);
+      console.log(`  👤 Obtener usuario: GET  http://localhost:8080/usuarios/:id`);
+      console.log(`  ✏️  Actualizar:      PUT  http://localhost:8080/usuarios/:id`);
+      console.log(`  🗑️  Eliminar:        DEL  http://localhost:8080/usuarios/:id`);
+      console.log(`  🔄 Cambiar estado:  PATCH http://localhost:8080/usuarios/:id/estado`);
+      // ¡AGREGA LOS NUEVOS ENDPOINTS DEL GATEWAY!
+      console.log(`  📊 Obtener límites: GET  http://localhost:8080/usuarios/admin/limites`);
+      console.log(`  ⚙️  Actualizar límite: PUT  http://localhost:8080/usuarios/admin/limites/:comisaria_rol`);
+      console.log(`  ❤️  Health check:    GET  http://localhost:8080/usuarios/health`);
+      console.log("=".repeat(60));
+      console.log("💡 Nota: Los límites de usuarios están ahora en ESTE servicio");
       console.log("=".repeat(60) + "\n");
     });
   })

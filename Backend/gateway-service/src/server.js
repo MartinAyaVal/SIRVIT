@@ -1,174 +1,90 @@
+// gateway-service/src/server.js
 const express = require('express');
 const cors = require('cors');
 const gatewayRouter = require('./routes/gatewayRoutes.js');
 
 const app = express();
+const PORT = 8080;
 
-// ===== MIDDLEWARE CRÍTICO =====
-// Configuración CORS mejorada
-const corsOptions = {
-    origin: function (origin, callback) {
-        // Permitir requests sin origin (archivos locales, Postman, etc.)
-        if (!origin) {
-            console.log('[CORS] ✅ Request sin origin (archivo local)');
-            return callback(null, true);
-        }
-        
-        // Lista de orígenes permitidos
-        const allowedOrigins = [
-            'http://localhost:8080',
-            'http://localhost:5500',
-            'http://127.0.0.1:5500',
-            'http://localhost:3000',
-            'http://localhost:3005',
-            'http://localhost:3006',
-            'file://', // Para archivos HTML locales
-            'null'
-        ];
-        
-        // Verificar si el origen está permitido
-        const isAllowed = allowedOrigins.some(allowedOrigin => 
-            origin === allowedOrigin || 
-            origin.startsWith(allowedOrigin) ||
-            allowedOrigin.includes(origin)
-        );
-        
-        if (isAllowed) {
-            console.log(`[CORS] ✅ Origen permitido: ${origin}`);
-            callback(null, true);
-        } else {
-            console.log(`[CORS] ❌ Origen bloqueado: ${origin}`);
-            callback(new Error('Origen no permitido por CORS'));
-        }
-    },
+console.log('🚀 Iniciando Gateway Service...');
+
+// ===== CONFIGURACIÓN CORS SIMPLE =====
+app.use(cors({
+    origin: '*',
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: [
-        'Content-Type', 
-        'Authorization', 
-        'Origin', 
-        'Accept', 
-        'X-Requested-With',
-        'x-user-id',
-        'x-user-documento', 
-        'x-user-rol', 
-        'x-user-nombre', 
-        'x-user-comisaria'
-    ],
-    exposedHeaders: [
-        'Authorization',
-        'X-User-ID',
-        'X-User-Rol'
-    ],
-    maxAge: 86400 // 24 horas en cache
-};
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
+}));
 
-// Aplicar CORS antes de cualquier otra ruta
-app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Middleware para manejar preflight requests
-app.options('*', cors(corsOptions));
-
-// Middleware para logs de CORS
+// ===== LOGS =====
 app.use((req, res, next) => {
-    console.log(`[CORS] 🌐 ${req.method} ${req.originalUrl}`);
-    console.log(`[CORS] 📍 Origin: ${req.headers.origin || 'Ninguno'}`);
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
+    console.log(`[${timestamp}] 🔐 Auth header:`, req.headers.authorization ? '✅ Presente' : '❌ Ausente');
     next();
 });
 
-// Parsear JSON y URL-encoded
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// ===== RUTAS DEL GATEWAY =====
+// ===== RUTAS =====
 app.use('/', gatewayRouter);
 
-// ===== MANEJO DE ERRORES DE JSON =====
+// ===== ERROR HANDLING =====
 app.use((err, req, res, next) => {
+    console.error('🔥 Error en Gateway:', err.message);
+    
     if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-        console.error('❌ Gateway: Error de JSON mal formado:', err.message);
         return res.status(400).json({
             success: false,
-            error: 'JSON mal formado',
+            error: 'JSON inválido',
             message: 'El cuerpo de la solicitud no es un JSON válido'
         });
     }
     
-    // Manejo de errores CORS
-    if (err.message && err.message.includes('CORS')) {
-        console.error('❌ Error CORS:', err.message);
-        return res.status(403).json({
-            success: false,
-            error: 'CORS Error',
-            message: 'Acceso no permitido desde este origen'
-        });
-    }
-    
-    next(err);
-});
-
-// ===== RUTA DE FALLBACK =====
-app.use('*', (req, res) => {
-    res.status(404).json({
+    res.status(500).json({
         success: false,
-        error: 'Ruta no encontrada',
-        message: `La ruta ${req.originalUrl} no existe en el gateway`,
-        availableRoutes: [
-            'POST /usuarios/auth/login',
-            'GET /usuarios (requiere token)',
-            'POST /usuarios (requiere token)',
-            'GET /medidas (requiere token)',
-            'POST /medidas (requiere token)',
-            'GET /health',
-            'GET /usuarios/health',
-            'GET /medidas/health',
-            'POST /test-login'
-        ]
+        error: 'Error interno del servidor',
+        message: err.message
     });
 });
 
-// ===== INICIAR GATEWAY =====
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log("\n" + "=".repeat(70));
-    console.log(`🚀 GATEWAY CENTRAL corriendo en: http://localhost:${PORT}`);
-    console.log("=".repeat(70));
-    console.log("🔒 CONFIGURACIÓN CORS:");
-    console.log("   • Orígenes permitidos: http://localhost:5500, http://127.0.0.1:5500");
-    console.log("   • Credenciales: Habilitadas");
-    console.log("   • Métodos permitidos: GET, POST, PUT, DELETE, PATCH, OPTIONS");
-    console.log("=".repeat(70));
-    console.log("📋 ENDPOINTS DISPONIBLES:");
-    console.log("\n🔐 AUTENTICACIÓN (público):");
-    console.log(`   POST http://localhost:${PORT}/usuarios/auth/login`);
+// ===== INICIAR =====
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log('\n' + '='.repeat(60));
+    console.log(`✅ GATEWAY INICIADO`);
+    console.log('='.repeat(60));
+    console.log(`📡 Puerto: ${PORT}`);
+    console.log(`🌐 URL: http://localhost:${PORT}`);
+    console.log('='.repeat(60));
+    console.log('\n🔗 ENDPOINTS DISPONIBLES:');
+    console.log('\n❤️  HEALTH CHECKS:');
+    console.log(`   GET  http://localhost:${PORT}/health`);
+    console.log(`   GET  http://localhost:${PORT}/usuarios/health`);      
+    console.log(`   GET  http://localhost:${PORT}/medidas/health`);       
     
-    console.log("\n👥 GESTIÓN DE USUARIOS (requiere token):");
-    console.log(`   GET    http://localhost:${PORT}/usuarios`);
-    console.log(`   POST   http://localhost:${PORT}/usuarios`);
-    console.log(`   GET    http://localhost:${PORT}/usuarios/:id`);
-    console.log(`   PUT    http://localhost:${PORT}/usuarios/:id`);
-    console.log(`   DELETE http://localhost:${PORT}/usuarios/:id`);
-    console.log(`   PATCH  http://localhost:${PORT}/usuarios/:id/estado`);
+    console.log('\n🔐 AUTENTICACIÓN:');
+    console.log(`   POST http://localhost:${PORT}/usuarios/auth/login`);  
     
-    console.log("\n🛡️  MEDIDAS DE PROTECCIÓN (requiere token):");
-    console.log(`   GET    http://localhost:${PORT}/medidas`);
-    console.log(`   POST   http://localhost:${PORT}/medidas`);
-    console.log(`   GET    http://localhost:${PORT}/medidas/:id`);
-    console.log(`   PUT    http://localhost:${PORT}/medidas/:id`);
-    console.log(`   DELETE http://localhost:${PORT}/medidas/:id`);
+    console.log('\n👥 USUARIOS:');
+    console.log(`   GET  http://localhost:${PORT}/usuarios`);             
+    console.log(`   POST http://localhost:${PORT}/usuarios`);             
     
-    console.log("\n❤️  HEALTH CHECKS (públicos):");
-    console.log(`   Gateway:    GET http://localhost:${PORT}/health`);
-    console.log(`   Usuarios:   GET http://localhost:${PORT}/usuarios/health`);
-    console.log(`   Medidas:    GET http://localhost:${PORT}/medidas/health`);
+    console.log('\n🛡️  MEDIDAS:');
+    console.log(`   GET  http://localhost:${PORT}/medidas`);              
+    console.log(`   POST http://localhost:${PORT}/medidas/completa/nueva`); 
     
-    console.log("\n🧪 TEST:");
-    console.log(`   Test:       POST http://localhost:${PORT}/test-login`);
-    
-    console.log("\n🔧 SERVICIOS BACKEND:");
-    console.log(`   Usuarios:   http://localhost:3005`);
-    console.log(`   Medidas:    http://localhost:3006 (ajusta si es diferente)`);
-    console.log("=".repeat(70));
-    console.log("💡 Nota: Usa POST /usuarios/auth/login para obtener token JWT");
-    console.log("=".repeat(70) + "\n");
+    console.log('\n🧪 TESTS:');
+    console.log(`   POST http://localhost:8080/test-login`);
+    console.log('='.repeat(60) + '\n');
 });
+
+// Manejar cierre
+process.on('SIGINT', () => {
+    console.log('\n🔴 Apagando Gateway...');
+    server.close(() => {
+        console.log('✅ Gateway cerrado correctamente');
+        process.exit(0);
+    });
+});
+
+module.exports = app;

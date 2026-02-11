@@ -29,123 +29,124 @@ exports.getusuario = async (req, res) => {
 
 // Crear usuario - CON ASIGNACIÓN CORRECTA DE ROL_ID Y COMISARIA_ID
 exports.createusuario = async (req, res) => {
-    try {
-        console.log("=".repeat(60));
-        console.log("🆕 CREANDO USUARIO - ASIGNACIÓN DE ROLES CORRECTA");
-        console.log("=".repeat(60));
-        
-        console.log("📥 REQ.BODY COMPLETO:", req.body);
-        
-        const { 
-            nombre, 
-            documento, 
-            cargo,
-            correo, 
-            telefono, 
-            // Obtener contraseña de cualquier campo posible
-            contrasena,
-            contraseña,
-            comisaria_rol
-        } = req.body;
+  try {
+    console.log("=".repeat(60));
+    console.log("🆕 CREANDO USUARIO - ASIGNACIÓN DE ROLES CORRECTA");
+    console.log("=".repeat(60));
+    
+    console.log("📥 REQ.BODY COMPLETO:", req.body);
+    
+    const { 
+      nombre, 
+      documento, 
+      cargo,
+      correo, 
+      telefono, 
+      // Obtener contraseña de cualquier campo posible
+      contrasena,
+      contraseña,
+      comisaria_rol
+    } = req.body;
 
-        // Validar campos requeridos
-        if (!nombre || !documento || !cargo || !correo || !telefono || !comisaria_rol) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'Todos los campos son requeridos' 
-            });
-        }
-
-        // Obtener la contraseña (aceptar ambos nombres)
-        const passwordRaw = contrasena || contraseña;
-        
-        console.log("🔐 Contraseña recibida:", passwordRaw ? `"${passwordRaw}" (${passwordRaw.length} chars)` : "NO RECIBIDA");
-        
-        if (!passwordRaw) {
-            return res.status(400).json({ 
-                success: false,
-                message: 'La contraseña es requerida' 
-            });
-        }
-
-        // ===== ASIGNACIÓN CORRECTA DE ROL_ID Y COMISARIA_ID =====
-        console.log("🎯 Asignando rol_id y comisaria_id según comisaria_rol:", comisaria_rol);
-        
-        // Mapeo de comisaria_rol a rol_id y comisaria_id
-        const mapeoRoles = {
-            'Administrador': { rolId: 1, comisariaId: null },
-            'Comisaría Primera': { rolId: 2, comisariaId: 1 },
-            'Comisaría Segunda': { rolId: 2, comisariaId: 2 },
-            'Comisaría Tercera': { rolId: 2, comisariaId: 3 },
-            'Comisaría Cuarta': { rolId: 2, comisariaId: 4 },
-            'Comisaría Quinta': { rolId: 2, comisariaId: 5 },
-            'Comisaría Sexta': { rolId: 2, comisariaId: 6 }
-        };
-        
-        const configRol = mapeoRoles[comisaria_rol];
-        
-        if (!configRol) {
-            console.log(`❌ comisaria_rol no reconocido: "${comisaria_rol}"`);
-            return res.status(400).json({ 
-                success: false,
-                message: `Comisaría/rol no válido: ${comisaria_rol}` 
-            });
-        }
-        
-        const rolIdFinal = configRol.rolId;
-        const comisariaIdFinal = configRol.comisariaId;
-        
-        console.log(`✅ Configuración asignada: rolId=${rolIdFinal}, comisariaId=${comisariaIdFinal} para "${comisaria_rol}"`);
-
-        // ⭐⭐ HASH DE CONTRASEÑA - UNA SOLA VEZ ⭐⭐
-        console.log("🔐 Generando hash de contraseña...");
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(passwordRaw, saltRounds);
-        console.log(`✅ Hash generado: ${hashedPassword.substring(0, 30)}...`);
-
-        // IMPORTANTE: Guardar documento como STRING
-        const documentoString = documento.toString();
-        console.log(`📝 Documento a guardar: ${documentoString}`);
-
-        // Crear usuario con valores CORRECTOS
-        const usuario = await Usuario.create({
-            nombre: nombre,
-            documento: documentoString,
-            cargo: cargo,
-            correo: correo,
-            telefono: telefono,
-            contraseña: hashedPassword,  // Hash ya generado
-            comisaria_rol: comisaria_rol,
-            rolId: rolIdFinal,  // ← VALOR CORRECTO según comisaria_rol
-            comisariaId: comisariaIdFinal  // ← VALOR CORRECTO según comisaria_rol
-        });
-
-        const usuarioResponse = usuario.toJSON();
-        delete usuarioResponse.contraseña;
-
-        console.log(`✅ Usuario creado exitosamente: ${usuario.nombre}`);
-        console.log(`📊 Datos guardados: rolId=${usuario.rolId}, comisariaId=${usuario.comisariaId}`);
-        console.log("=".repeat(60));
-
-        res.status(201).json({
-            success: true,
-            message: "Usuario creado exitosamente",
-            data: usuarioResponse
-        });
-        
-    } catch(error) {
-        console.log('❌ Error al crear usuario:', error.message);
-        console.log('❌ Errores de validación:', error.errors);
-        res.status(500).json({ 
-            success: false,
-            message: 'Error al crear usuario',
-            error: error.message,
-            details: error.errors ? error.errors.map(err => ({ 
-                campo: err.path, 
-                mensaje: err.message 
-            })) : []
-        });
+    // Validar campos requeridos
+    if (!nombre || !documento || !cargo || !correo || !telefono || !comisaria_rol) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Todos los campos son requeridos' 
+      });
     }
+
+    // Obtener la contraseña (aceptar ambos nombres)
+    const passwordRaw = contrasena || contraseña;
+    
+    console.log("🔐 Contraseña recibida:", passwordRaw ? `"${passwordRaw}" (${passwordRaw.length} chars)` : "NO RECIBIDA");
+    
+    if (!passwordRaw) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'La contraseña es requerida' 
+      });
+    }
+
+    // ===== ASIGNACIÓN CORRECTA DE ROL_ID Y COMISARIA_ID =====
+    console.log("🎯 Asignando rol_id y comisaria_id según comisaria_rol:", comisaria_rol);
+    
+    // Mapeo de comisaria_rol a rol_id y comisaria_id
+    const mapeoRoles = {
+      'Administrador': { rolId: 1, comisariaId: 0 },  // Cambiar null a 0
+      'Comisaría Primera': { rolId: 2, comisariaId: 1 },
+      'Comisaría Segunda': { rolId: 2, comisariaId: 2 },
+      'Comisaría Tercera': { rolId: 2, comisariaId: 3 },
+      'Comisaría Cuarta': { rolId: 2, comisariaId: 4 },
+      'Comisaría Quinta': { rolId: 2, comisariaId: 5 },
+      'Comisaría Sexta': { rolId: 2, comisariaId: 6 }
+    };
+    
+    const configRol = mapeoRoles[comisaria_rol];
+    
+    if (!configRol) {
+      console.log(`❌ comisaria_rol no reconocido: "${comisaria_rol}"`);
+      return res.status(400).json({ 
+        success: false,
+        message: `Comisaría/rol no válido: ${comisaria_rol}` 
+      });
+    }
+    
+    const rolIdFinal = configRol.rolId;
+    const comisariaIdFinal = configRol.comisariaId;
+    
+    console.log(`✅ Configuración asignada: rolId=${rolIdFinal}, comisariaId=${comisariaIdFinal} para "${comisaria_rol}"`);
+
+    // ⭐⭐ HASH DE CONTRASEÑA - UNA SOLA VEZ ⭐⭐
+    console.log("🔐 Generando hash de contraseña...");
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(passwordRaw, saltRounds);
+    console.log(`✅ Hash generado: ${hashedPassword.substring(0, 30)}...`);
+
+    // IMPORTANTE: Guardar documento como STRING
+    const documentoString = documento.toString();
+    console.log(`📝 Documento a guardar: ${documentoString}`);
+
+    // Crear usuario con valores CORRECTOS
+    const usuario = await Usuario.create({
+      nombre: nombre,
+      documento: documentoString,
+      cargo: cargo,
+      correo: correo,
+      telefono: telefono,
+      contraseña: hashedPassword,  // Hash ya generado
+      comisaria_rol: comisaria_rol,
+      rolId: rolIdFinal,  // ← VALOR CORRECTO según comisaria_rol
+      comisariaId: comisariaIdFinal,  // ← VALOR CORRECTO según comisaria_rol
+      estado: 'activo'  // Asegurar que tenga estado
+    });
+
+    const usuarioResponse = usuario.toJSON();
+    delete usuarioResponse.contraseña;
+
+    console.log(`✅ Usuario creado exitosamente: ${usuario.nombre}`);
+    console.log(`📊 Datos guardados: rolId=${usuario.rolId}, comisariaId=${usuario.comisariaId}`);
+    console.log("=".repeat(60));
+
+    res.status(201).json({
+      success: true,
+      message: "Usuario creado exitosamente",
+      data: usuarioResponse
+    });
+    
+  } catch(error) {
+    console.log('❌ Error al crear usuario:', error.message);
+    console.log('❌ Errores de validación:', error.errors);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al crear usuario',
+      error: error.message,
+      details: error.errors ? error.errors.map(err => ({ 
+        campo: err.path, 
+        mensaje: err.message 
+      })) : []
+    });
+  }
 };
 
 // Obtener usuario por Id
@@ -279,20 +280,30 @@ exports.updateusuario = async (req, res) => {
 };
 // Eliminar usuario por Id
 exports.deleteusuario = async (req, res) => {
-    try{
+    try {
         const { id } = req.params;
+        console.log(`🗑️ Eliminando usuario ID: ${id}`);
+        
         const usuario = await Usuario.findByPk(id);
-        if(!usuario) return res.status(404).json({ 
-            success: false,
-            message: 'Usuario no encontrado'
-        });
+        if(!usuario) {
+            console.log(`❌ Usuario ID ${id} no encontrado`);
+            return res.status(404).json({ 
+                success: false,
+                message: 'Usuario no encontrado'
+            });
+        }
 
         await usuario.destroy();
+        
+        console.log(`✅ Usuario ID ${id} eliminado correctamente`);
+        
         res.json({ 
             success: true,
-            message: 'Usuario eliminado correctamente'
+            message: 'Usuario eliminado correctamente',
+            deletedId: id
         });
     } catch (error) {
+        console.error('❌ Error al eliminar usuario:', error);
         res.status(500).json({ 
             success: false,
             message: 'Error al eliminar usuario', 
@@ -307,11 +318,14 @@ exports.cambiarEstadoUsuario = async (req, res) => {
         const { id } = req.params;
         const { estado } = req.body;
         
-        const usuario = await Usuario.findByPk(id);
-        if (!usuario) return res.status(404).json({ 
-            success: false,
-            message: 'Usuario no encontrado' 
-        });
+        console.log(`🔄 Cambiando estado usuario ID: ${id} a: ${estado}`);
+        
+        if (!estado) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'El campo "estado" es requerido' 
+            });
+        }
         
         if (!['activo', 'inactivo'].includes(estado)) {
             return res.status(400).json({ 
@@ -320,17 +334,29 @@ exports.cambiarEstadoUsuario = async (req, res) => {
             });
         }
         
+        const usuario = await Usuario.findByPk(id);
+        if (!usuario) {
+            console.log(`❌ Usuario ID ${id} no encontrado`);
+            return res.status(404).json({ 
+                success: false,
+                message: 'Usuario no encontrado' 
+            });
+        }
+        
         await usuario.update({ estado });
         
         const usuarioResponse = usuario.toJSON();
         delete usuarioResponse.contraseña;
         
+        console.log(`✅ Usuario ID ${id} actualizado a estado: ${estado}`);
+        
         res.json({
             success: true,
-            message: "Estado actualizado",
+            message: "Estado actualizado correctamente",
             data: usuarioResponse
         });
     } catch (error) {
+        console.error('❌ Error al cambiar estado:', error);
         res.status(500).json({ 
             success: false,
             message: 'Error al cambiar estado del usuario', 

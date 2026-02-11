@@ -32,8 +32,8 @@
 
 .headerF h2 {
     color: rgb(15, 129, 0);
-    margin: 10px 0 0 0;
-    font-size: 22px;
+    margin: 10px 0 20px 0;
+    font-size: 30px;
     font-weight: bold;
 }
 
@@ -69,6 +69,22 @@
     margin-bottom: 15px;
 }
 
+.VRextras {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+}
+
+.VRextras h3 {
+    color: rgb(15, 129, 0);
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
 .victimaExtra {
     display: none;
     margin-bottom: 0;
@@ -82,8 +98,19 @@
     margin-bottom: 15px;
 }
 
+.victimarioExtra {
+    margin-bottom: 0;
+    padding: 10px;
+}
 
-.tablaNumero,
+.victimarioExtra h3 {
+    text-align: center;
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.tablaInfoMedida,
 .tablaInfoDocumentoVictima,
 .tablaInfoDocumentoVictimario,
 .tablaInfoGeneroVictima,
@@ -96,8 +123,7 @@
     border-collapse: collapse;
 }
 
-
-.tablaNumero td,
+.tablaInfoMedida,
 .tablaInfoDocumentoVictima td,
 .tablaInfoDocumentoVictimario td,
 .tablaInfoGeneroVictima td,
@@ -109,8 +135,8 @@
     font-size: 14px;
 }
 
-
-.tablaNumero input[type="number"],
+.tablaInfoMedida select,
+.tablaInfoMedida input[type="text"],
 .tablaInfoDocumentoVictima input[type="text"],
 .tablaInfoDocumentoVictima input[type="number"],
 .tablaInfoDocumentoVictima select,
@@ -146,7 +172,9 @@
     background-color: #ffffff;
 }
 
-.tablaNumero input:focus,
+
+.tablaInfoMedida input:focus,
+.tablaInfoMedida select:focus,
 .tablaInfoDocumentoVictima input:focus,
 .tablaInfoDocumentoVictima select:focus,
 .tablaInfoDocumentoVictimario input:focus,
@@ -164,21 +192,28 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.tablaNumero td {
-    width: 33.33%;
-}
-
 .tdNumero {
     padding-top: 15px;
     padding-bottom: 10px;
 }
 
+.tablaNumero{
+    box-shadow: 0 0 10px rgba(0, 94, 17, 0.5);
+    border-radius: 20px;
+    padding: 8px;
+    margin-top: 40px;
+    background-color: #ffffff;
+}
+
 .tablaNumero input[type="number"] {
-    width: 20%;
-    background-color: #e3ffeb;
+    width: 100%;
+    background-color: #ffffff;
     text-align: center;
 }
 
+.tablaInfoMedida td{
+    width: 25%;
+}
 
 .tablaInfoDocumentoVictima td {
     width: 25%;
@@ -212,8 +247,10 @@
 .tablaF2 tr:nth-child(odd),
 .tablaExtras tr:nth-child(odd),
 .tablaInfoDocumentoVictima tr:nth-child(odd),
+.tablaInfoMedida tr:nth-child(odd),
 .tablaInfoDocumentoVictimario tr:nth-child(odd),
 .tablaInfoGeneroVictima tr:nth-child(odd),
+.tablaNumero tr:nth-child(odd),
 .tablaInfoGeneroVictimario tr:nth-child(odd) {
     background-color: #e3ffeb;
 }
@@ -243,12 +280,17 @@
 }
 
 .mensaje {
+    text-align: center;
     display: none;
     font-size: 12px;
     color: rgb(255, 0, 0);
-    padding: 0;
+    padding: 5px;
     margin-top: 5px;
     margin-bottom: 0;
+    background-color: rgba(255, 225, 225, 0.9);
+    border-radius: 4px;
+    border-left: 3px solid #d32f2f;
+    font-weight: 500;
 }
 
 .botonesF {

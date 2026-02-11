@@ -12,6 +12,8 @@ router.delete('/:id', victimaController.deleteVictima);
 // Rutas específicas
 router.post('/multiple', victimaController.createMultipleVictimas);
 router.get('/medida/:medidaId', victimaController.getVictimasByMedidaId);
+router.get('/comisaria/:comisariaId', victimaController.getVictimasByComisaria);
+router.get('/tipo/:tipoVictimaId', victimaController.getVictimasByTipo); 
 router.get('/buscar/search', victimaController.searchVictimas);
 
 module.exports = router;

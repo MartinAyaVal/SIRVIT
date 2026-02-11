@@ -1,23 +1,42 @@
+// Backend/medidas-service/routes/medidasRoutes.js
 const express = require('express');
 const router = express.Router();
-const medidaController = require('../controllers/medidasController.js');
+const medidasController = require('../controllers/medidasController');
 
-// ===== RUTA PRINCIPAL: Crear medida completa (con victimario y víctimas)
-router.post('/completa/nueva', medidaController.createMedidaCompleta);
+// ===== RUTAS DISPONIBLES =====
 
-// ===== RUTAS BÁSICAS DE MEDIDAS =====
-router.get('/', medidaController.getMedidas);
-router.get('/:id', medidaController.getMedidasById);
-router.put('/:id', medidaController.updateMedidas);
-router.delete('/:id', medidaController.deleteMedidas);
+// 1. Crear medida completa (N:M + numeroIncidencia)
+router.post('/completa/nueva', medidasController.createMedidaCompleta);
 
-// ===== RUTAS CON RELACIONES =====
-router.get('/con-relaciones/todas', medidaController.getMedidasConRelaciones);
-router.get('/completa/:id', medidaController.getMedidaCompleta);
+// 2. Obtener medida completa por ID
+router.get('/completa/:id', medidasController.getMedidaCompleta);
 
-// ===== RUTAS ESPECÍFICAS =====
-router.get('/comisaria/:comisariaId', medidaController.getMedidasPorComisaria);
-router.get('/estadisticas/totales', medidaController.getEstadisticas);
-router.get('/buscar/search', medidaController.searchMedidas);
+// 3. Actualizar medida
+router.put('/:id', medidasController.updateMedidas);
+
+// 4. Obtener medidas para tabla (CON ESTADO)
+router.get('/con-relaciones/todas', medidasController.getMedidasConRelaciones);
+
+// 5. Obtener medidas por comisaría
+router.get('/con-relaciones/comisaria/:comisariaId', medidasController.getMedidasPorComisaria);
+
+// 6. Health check
+router.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    service: 'medidas-service',
+    timestamp: new Date().toISOString(),
+    endpoints: [
+      'POST /api/medidas/completa/nueva',
+      'GET /api/medidas/completa/:id',
+      'GET /api/medidas/con-relaciones/todas',
+      'GET /api/medidas/con-relaciones/comisaria/:comisariaId',
+      'PUT /api/medidas/:id'
+    ]
+  });
+});
+
+// ===== RUTA PARA TODAS LAS MEDIDAS (proxy) =====
+router.get('/', medidasController.getMedidasConRelaciones);
 
 module.exports = router;

@@ -13,7 +13,7 @@ body {
 
 .botonFiltrar{
     position: absolute;
-    top: 10%;
+    top: 11%;
     left: 33%;
     width: 15%;
     text-align: center;
@@ -47,7 +47,8 @@ body {
 .botonesFiltrar{
     display: none;
     position: absolute; 
-    top: 17%; 
+    width: 51%;
+    top: 18%; 
     left: 35%;
     right: 7%;
     transition: all 0.5s ease;
@@ -55,13 +56,43 @@ body {
 }
 
 .filtrarCedula{
-    width: 375px;
+    width: 200px;
+    transition: All 0.5s ease;
+}
+
+.filtrarCedula:focus{
+    transform: scale(1.05);
+    border-color: none;
     transition: All 0.5s ease;
 }
 
 .filtrarNombre{
+    border: none;
     width: 375px;
     transition: All 0.5s ease;
+}
+
+.filtrarNombre:focus{
+    transform: scale(1.05);
+    border-color: none;
+    transition: All 0.5s ease;
+}
+
+.botonBorrarFiltro{
+    background-color: #ffcccc;
+    border: none;
+    border-radius: 100px;
+    font-size: 70%;
+    text-decoration: none;
+    color: black;
+    box-shadow: 0 0 10px rgb(255, 0, 0); 
+    transition: All 0.5s ease;
+    cursor: pointer;
+}
+
+.botonBorrarFiltro:hover {
+    transform: scale(1.1);
+    background-color: #ffbaba;
 }
 
 .botonesFiltrar input{
@@ -98,8 +129,8 @@ body {
 
 .botonRegistrar{
     position: absolute;
-    top: 10%;
-    left: 60%;
+    top: 11%;
+    left: 58%;
     width: 30%;
     text-align: center;
     padding: 1%;
@@ -130,22 +161,14 @@ body {
 } 
 
 .tituloMedidas {
-    position: absolute;
-    left: 40%;
-    font-size: 160%;
-}
-
-.botonTodos{
-    border: none;
-    height: 40px;
+    text-align: center;
     width: 100%;
-    cursor: pointer;
-    font-size: 17px;
-    background-color: #eefff3;
-    transition: all 0.3s ease;
+    margin-top: 3%;
+    margin-bottom: 2%;
+    font-size: 165%;
 }
 
-.botonC1, .botonC2, .botonC3, .botonC4, .botonC5, .botonC6{
+.botonTodos, .botonC1, .botonC2, .botonC3, .botonC4, .botonC5, .botonC6{
     border: none;
     height: 40px;
     width: 100%;
@@ -156,8 +179,8 @@ body {
     transition: all 0.3s ease;   
 }
 
-.botonC1:hover, .botonC2:hover, .botonC3:hover, .botonC4:hover, .botonC5:hover, .botonC6:hover{
-    background-color: #deffe8;
+.botonTodos:hover, .botonC1:hover, .botonC2:hover, .botonC3:hover, .botonC4:hover, .botonC5:hover, .botonC6:hover{
+    background-color: #eefff3;
     color: black;
 }
 
@@ -172,12 +195,13 @@ body {
     top: 30%;
     left: 19%;
     width: 80%;
-    height: 100%;
-    z-index: 1;
+    height: auto;
+    z-index: 3;
     transition: All 0.5s ease;
 }
 
 .medidas{
+    z-index: 1;
     display: flex;
     justify-content: center;
     background-color: #eefff3;
@@ -185,11 +209,11 @@ body {
     top: 35%;
     left: 19%;
     width: 80%;
-    height: 100%;
+    height: 63%;
     transition: All 0.5s ease;
     margin-bottom: 200px;
     box-shadow: 0 0 10px rgb(0, 94, 17); 
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -333,33 +357,49 @@ input[type=number]::-webkit-outer-spin-button {
     animation: botones 0.8s ease-out;
 }
 
-/* Agrega estos estilos a tu CSS */
 .contenedor-tabla {
-    margin-top: 60px;
     overflow-x: auto;
-    border-radius: 10px;
+    width: 99%;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
 }
 
 .tabla-medidas {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
 }
 
 .tabla-medidas th {
-    padding: 15px;
-    text-align: left;
-    font-weight: 600;
+    text-align: center;
+    padding: 20px;
+    font-size: 100%;
+    background-color: #d8ffe4;
     border-bottom: 3px solid #0d6829;
+    border-top: 3px solid #0d6829;
 }
 
 .tabla-medidas td {
-    padding: 12px 15px;
+    text-align: center;
+    align-items: center;
+    padding: 20px;
     border-bottom: 1px solid #e0e0e0;
+    font-size: 90%;
+    cursor: text;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
 }
 
 .tabla-medidas tbody tr {
     transition: background-color 0.2s ease;
+    pointer-events: auto !important;
 }
 
 .tabla-medidas tbody tr:hover {
@@ -488,3 +528,315 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
 }
+
+/* Estilos para botones de comisarías activos */
+.seccionBotonesComisarias button.activo {
+    background-color: #eefff3;
+    color: rgb(0, 0, 0);
+}
+
+/* Estilos para el indicador de carga */
+.cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.cargando span {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Estilos para filas de la tabla */
+.tabla-medidas tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* NUEVOS ESTILOS PARA PERMITIR SELECCIÓN DE TEXTO */
+.medidas {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    pointer-events: auto !important;
+}
+
+#cuerpoTabla {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    pointer-events: auto !important;
+}
+
+#cuerpoTabla tr {
+    pointer-events: auto !important;
+}
+
+#cuerpoTabla td {
+    pointer-events: auto !important;
+    cursor: text !important;
+}
+
+/* Estilo para las celdas seleccionables */
+.selectable {
+    cursor: text !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+/* Estilo para el badge (no seleccionable) */
+.badge-victimas {
+    user-select: none;
+    pointer-events: none;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.badge-victimas.si {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.badge-victimas.no {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.badge-victimas.desconocido {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Estilos para la selección de texto */
+::selection {
+    background-color: rgba(19, 128, 53, 0.3);
+    color: #000;
+}
+
+::-moz-selection {
+    background-color: rgba(19, 128, 53, 0.3);
+    color: #000;
+}
+/* ===== ESTILOS PARA INFORMACIÓN DE REGISTRO (MISMO ESTILO QUE FORMULARIO) ===== */
+
+/* Contenedor de información de registro - Mismo estilo que el formulario */
+.info-registro-medida {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 0;
+    margin: 10px 0 20px 0;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.1);
+    overflow: hidden;
+    width: 100%;
+    font-family: Arial, sans-serif;
+}
+
+/* Tabla de información de registro */
+.info-registro-medida table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+/* Encabezado de la tabla - Mismo estilo que formulario */
+.info-registro-medida thead th {
+    background-color: #d8ffe4;
+    color: #0d6829;
+    padding: 15px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+    border-bottom: 2px solid #0d6829;
+}
+
+/* Filas de la tabla */
+.info-registro-medida tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-registro-medida tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Celdas de la tabla */
+.info-registro-medida td {
+    padding: 12px 15px;
+    vertical-align: top;
+}
+
+/* Celdas del encabezado (primera columna) */
+.info-registro-medida td:first-child {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #2c3e50;
+    width: 35%;
+    border-right: 1px solid #e0e0e0;
+}
+
+/* Celdas del contenido (segunda columna) */
+.info-registro-medida td:last-child {
+    background-color: #ffffff;
+    color: #495057;
+    width: 65%;
+}
+
+/* Resaltar número de medida */
+.info-registro-medida .numero-medida {
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 768px) {
+    .info-registro-medida {
+        margin: 8px 0 15px 0;
+    }
+    
+    .info-registro-medida thead th {
+        padding: 12px;
+        font-size: 14px;
+    }
+    
+    .info-registro-medida td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .info-registro-medida td:first-child,
+    .info-registro-medida td:last-child {
+        width: 50%;
+    }
+}
+
+/* ===== ESTILOS PARA BOTONES DINÁMICOS ===== */
+
+/* Contenedor de botones */
+.botones-accion-formulario {
+    display: flex;
+    gap: 15px;
+    margin: 25px auto 15px auto;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    border-top: 2px solid #e0e0e0;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Botones */
+.botonEditar, .botonCerrar {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    min-width: 120px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.botonEditar {
+    background-color: #138035;
+    color: white;
+}
+
+.botonEditar:hover {
+    background-color: #0d6829;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.botonCerrar {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.botonCerrar:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* ===== ESTILOS PARA FORMULARIO EN MODO VISUALIZACIÓN ===== */
+
+/* Título del formulario en modo visualización */
+.headerF h2 {
+    margin-bottom: 5px !important;
+}
+/* ===== ESTILOS PARA FORMULARIO EN MODO VISUALIZACIÓN ===== */
+
+/* Campos deshabilitados en modo visualización */
+#formularioMedidas input:disabled,
+#formularioMedidas select:disabled,
+#formularioMedidas textarea:disabled,
+#numeroMedida:disabled,
+#añoMedida:disabled,
+#selectComisariaAdmin:disabled {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    cursor: not-allowed !important;
+}
+
+
+/* Título del formulario en modo visualización */
+.headerF h2[style*="Visualización"] {
+    color: #2c3e50 !important;
+    font-weight: bold !important;
+    margin-bottom: 15px !important;
+    font-size: 24px !important;
+}
+
+/* Secciones del formulario en modo visualización */
+.seccionF h3, .extras h3 {
+    color: #0d6829 !important;
+    font-size: 18px !important;
+    margin: 20px 0 15px 0 !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid #d8ffe4 !important;
+}
+
+/* Tablas en modo visualización */
+#formularioMedidas table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 15px !important;
+    background-color: #ffffff !important;
+}
+
+#formularioMedidas table th {
+    background-color: #d8ffe4 !important;
+    color: #0d6829 !important;
+    padding: 12px 15px !important;
+    text-align: left !important;
+    font-weight: bold !important;
+    border-bottom: 2px solid #0d6829 !important;
+}
+
+#formularioMedidas table td {
+    padding: 10px 15px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    vertical-align: top !important;
+}
+
+/* Ocultar mensajes de validación en modo visualización */
+#formularioMedidas .mensaje {
+    display: none !important;
+}
+

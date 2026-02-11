@@ -1,3 +1,4 @@
+// Backend/associations.js
 function setupAssociations(models) {
   const {
     Comisaria,
@@ -6,12 +7,15 @@ function setupAssociations(models) {
     Medidas,
     Victimas,
     Victimarios,
-    TipoVictima
+    TipoVictima,
+    TipoVictimario
   } = models;
 
   console.log('🔗 Configurando asociaciones...');
 
-  // 1. Usuario ↔ Rol (N:1)
+  // ===== RELACIONES EXISTENTES =====
+
+  // 1. USUARIO - ROL (N:1)
   Usuario.belongsTo(Rol, {
     foreignKey: 'rolId',
     as: 'rol'
@@ -21,7 +25,7 @@ function setupAssociations(models) {
     as: 'usuarios'
   });
 
-  // 2. Usuario ↔ Comisaria (N:1)
+  // 2. USUARIO - COMISARÍA (N:1)
   Usuario.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -31,7 +35,7 @@ function setupAssociations(models) {
     as: 'usuarios'
   });
 
-  // 3. Medidas ↔ Comisaria (N:1)
+  // 3. MEDIDAS - COMISARÍA (N:1)
   Medidas.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -41,7 +45,7 @@ function setupAssociations(models) {
     as: 'medidas'
   });
 
-  // 4. Medidas ↔ Usuario (N:1) - Usuario que registra la medida
+  // 4. MEDIDAS - USUARIO (CREADOR) (N:1)
   Medidas.belongsTo(Usuario, {
     foreignKey: 'usuarioId',
     as: 'usuario'
@@ -51,37 +55,77 @@ function setupAssociations(models) {
     as: 'medidasRegistradas'
   });
 
-  // 5. Medidas ↔ Victimarios (N:1) - Un victimario puede tener múltiples medidas
-  Medidas.belongsTo(Victimarios, {
-    foreignKey: 'victimarioId',
-    as: 'victimario'
+  // 5. MEDIDAS - USUARIO (ÚLTIMA EDICIÓN) (N:1)
+  Medidas.belongsTo(Usuario, {
+    foreignKey: 'usuarioUltimaEdicionId',
+    as: 'usuarioUltimaEdicion',
+    allowNull: true
   });
-  Victimarios.hasMany(Medidas, {
-    foreignKey: 'victimarioId',
-    as: 'medidas'
-  });
-
-  // 6. Medidas ↔ Victimas (1:N)
-  Medidas.hasMany(Victimas, {
-    foreignKey: 'medidaId',
-    as: 'victimas'
-  });
-  Victimas.belongsTo(Medidas, {
-    foreignKey: 'medidaId',
-    as: 'medida'
+  Usuario.hasMany(Medidas, {
+    foreignKey: 'usuarioUltimaEdicionId',
+    as: 'medidasEditadas'
   });
 
-  // 7. Victimas ↔ TipoVictima (N:1)
+  // ===== NUEVAS RELACIONES MUCHOS-A-MUCHOS =====
+
+  // 6. MEDIDAS - VICTIMARIOS (N:M) - TABLA INTERMEDIA
+  Medidas.belongsToMany(Victimarios, {
+    through: 'MedidaVictimarios',
+    foreignKey: 'medidaId',
+    otherKey: 'victimarioId',
+    as: 'victimarios',
+    timestamps: false
+  });
+  
+  Victimarios.belongsToMany(Medidas, {
+    through: 'MedidaVictimarios',
+    foreignKey: 'victimarioId',
+    otherKey: 'medidaId',
+    as: 'medidas',
+    timestamps: false
+  });
+
+  // 7. MEDIDAS - VÍCTIMAS (N:M) - TABLA INTERMEDIA
+  Medidas.belongsToMany(Victimas, {
+    through: 'MedidaVictimas',
+    foreignKey: 'medidaId',
+    otherKey: 'victimaId',
+    as: 'victimas',
+    timestamps: false
+  });
+  
+  Victimas.belongsToMany(Medidas, {
+    through: 'MedidaVictimas',
+    foreignKey: 'victimaId',
+    otherKey: 'medidaId',
+    as: 'medidas',
+    timestamps: false
+  });
+
+  // 8. VICTIMARIOS - TIPO VICTIMARIO (N:1)
+  Victimarios.belongsTo(TipoVictimario, {
+    foreignKey: 'tipoVictimarioId',
+    as: 'tipoVictimario',
+    allowNull: true
+  });
+  
+  TipoVictimario.hasMany(Victimarios, {
+    foreignKey: 'tipoVictimarioId',
+    as: 'victimarios'
+  });
+
+  // 9. VÍCTIMAS - TIPO VÍCTIMA (N:1)
   Victimas.belongsTo(TipoVictima, {
     foreignKey: 'tipoVictimaId',
     as: 'tipoVictima'
   });
+  
   TipoVictima.hasMany(Victimas, {
     foreignKey: 'tipoVictimaId',
     as: 'victimas'
   });
 
-  // 8. Victimas ↔ Comisaria (N:1)
+  // 10. VÍCTIMAS - COMISARÍA (N:1)
   Victimas.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria'
@@ -91,7 +135,7 @@ function setupAssociations(models) {
     as: 'victimas'
   });
 
-  // 9. Victimarios ↔ Comisaria (N:1) - Nueva relación
+  // 11. VICTIMARIOS - COMISARÍA (N:1)
   Victimarios.belongsTo(Comisaria, {
     foreignKey: 'comisariaId',
     as: 'comisaria',
@@ -103,6 +147,10 @@ function setupAssociations(models) {
   });
 
   console.log('✅ Asociaciones configuradas correctamente');
+  
+  console.log('🔍 Nuevas relaciones N:M:');
+  console.log('   • Medidas ↔ Victimarios (N:M) -> Tabla: MedidaVictimarios');
+  console.log('   • Medidas ↔ Victimas (N:M) -> Tabla: MedidaVictimas');
 }
 
 module.exports = setupAssociations;

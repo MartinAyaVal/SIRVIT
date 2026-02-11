@@ -1,105 +1,110 @@
+// Backend/medidas-service/models/medidas.js
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const Victimarios = sequelize.define("Victimarios", {
+  const Medidas = sequelize.define("Medidas", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    nombreCompleto: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    fechaNacimiento: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
-    },
-    edad: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    tipoDocumento: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    otroTipoDocumento: {
-      type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    numeroDocumento: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      unique: true
-    },
-    documentoExpedido: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    sexo: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    lgtbi: {
-      type: DataTypes.STRING(2),
-      allowNull: false,
-      defaultValue: 'NO'
-    },
-    cualLgtbi: {
-      type: DataTypes.STRING(45),
-      allowNull: true
-    },
-    otroGeneroIdentificacion: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      field: 'otro_genero_identificacion'
-    },
-    estadoCivil: {
-      type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    direccion: {
-      type: DataTypes.STRING(200),
-      allowNull: false
-    },
-    barrio: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    ocupacion: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    estudios: {
-      type: DataTypes.STRING(100),
-      allowNull: false
-    },
-    telefono: {
-      type: DataTypes.STRING(15),
-      allowNull: true
-    },
-    correo: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    antecedentes: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
     comisariaId: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'comisaria_id'  
+    },
+    numeroMedida: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'numeroMedida'  
+    },
+    anoMedida: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'anoMedida'  
+    },
+    estado: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      defaultValue: 'ACTIVA',
+      field: 'estado'
+    },
+    numeroIncidencia: {
+      type: DataTypes.STRING(50),
       allowNull: true,
-      field: 'comisaria_id'
+      field: 'numero_incidencia'
+    },
+    trasladadoDesde: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'trasladado_desde'
+    },
+    solicitadoPor: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      field: 'solicitado_por'
+    },
+    otroSolicitante: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'otro_solicitante'
+    },
+    lugarHechos: {
+      type: DataTypes.STRING(200),
+      allowNull: false,
+      field: 'lugarHechos'  
+    },
+    tipoViolencia: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+      field: 'tipoViolencia'  
+    },
+    fechaUltimosHechos: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      field: 'fechaUltimosHechos'  
+    },
+    horaUltimosHechos: {
+      type: DataTypes.TIME,
+      allowNull: false,
+      field: 'horaUltimosHechos'  
+    },
+    numeroVictimas: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'numero_victimas'
+    },
+    numeroVictimarios: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      field: 'numero_victimarios'
+    },
+    usuarioId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'usuario_id'  
+    },
+    usuarioUltimaEdicionId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'usuario_ultima_edicion_id'
     }
   }, {
-    tableName: "victimarios",
+    tableName: "medidas_de_proteccion",
     timestamps: true,
     createdAt: 'fecha_creacion',
-    updatedAt: 'fecha_actualizacion'
+    updatedAt: 'fecha_actualizacion',
+    underscored: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ['numeroMedida', 'anoMedida'],
+        name: 'unique_numero_año'
+      }
+    ]
   });
 
-  return Victimarios;
+  return Medidas;
 };

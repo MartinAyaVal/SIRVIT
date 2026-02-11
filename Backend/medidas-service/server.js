@@ -8,9 +8,12 @@ const PORT = process.env.PORT || 3002;
 
 // ===== MIDDLEWARE =====
 app.use(cors({
-  origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://localhost:8080'],
-  credentials: true
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-User-ID', 'X-User-Documento', 'X-User-Rol', 'X-User-Nombre', 'X-User-Comisaria']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -92,7 +95,6 @@ app.use((req, res) => {
   });
 });
 
-// ===== INICIAR SERVIDOR =====
 app.listen(PORT, '0.0.0.0', () => {
   console.log('\n' + '='.repeat(60));
   console.log('🚀 MEDIDAS-SERVICE');
@@ -103,8 +105,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📊 API: http://localhost:${PORT}/api/medidas`);
   console.log('='.repeat(60));
   console.log('\n🎯 ACCESO A TRAVÉS DEL GATEWAY:');
-  console.log('   🟢 POST http://localhost:8080/usuarios/completa/nueva');
-  console.log('   🟢 POST http://localhost:8080/medidas/completa/nueva');
+  console.log('   🟢 POST http://localhost:8080/medidas/completa/nueva'); 
   console.log('   🔵 GET  http://localhost:8080/medidas/*');
   console.log('='.repeat(60) + '\n');
 });

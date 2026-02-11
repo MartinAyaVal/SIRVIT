@@ -609,3 +609,40 @@ body.loading-active button:not(.loader *) {
         transform: translateY(0);
     }
 }
+
+/* Agrega al final de index.css */
+.btn-editar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.btn-editar:hover {
+    opacity: 1;
+    background-color: rgba(19, 128, 53, 0.1);
+    transform: scale(1.1);
+}
+
+.btn-editar img {
+    vertical-align: middle;
+}
+
+/* Estilos para campos deshabilitados en modo visualización */
+#formularioMedidas input:disabled,
+#formularioMedidas select:disabled {
+    background-color: #f5f5f5;
+    color: #333;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+/* Botón Cerrar en modo visualización */
+#guardarMedida[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
