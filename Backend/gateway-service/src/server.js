@@ -1,14 +1,42 @@
-// gateway-service/src/server.js
 const express = require('express');
 const cors = require('cors');
 const gatewayRouter = require('./routes/gatewayRoutes.js');
 
+// Silenciar logs de http-proxy-middleware
+process.env.DEBUG = 'none';
+process.env.NODE_ENV = 'production';
+process.removeAllListeners('warning');
+
+const originalConsoleLog = console.log;
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+
+console.log = function(...args) {
+    if (args.length > 0) {
+        const firstArg = String(args[0]);
+        if (firstArg.includes('[HPM]') || firstArg.includes('DeprecationWarning')) {
+            return;
+        }
+    }
+    originalConsoleLog.apply(console, args);
+};
+
+console.warn = function(...args) {
+    if (args.length > 0) {
+        const firstArg = String(args[0]);
+        if (firstArg.includes('DeprecationWarning')) {
+            return;
+        }
+    }
+    originalConsoleWarn.apply(console, args);
+};
+
+console.error = originalConsoleError;
+
 const app = express();
 const PORT = 8080;
 
-console.log('🚀 Iniciando Gateway Service...');
-
-// ===== CONFIGURACIÓN CORS SIMPLE =====
+// Configuración CORS
 app.use(cors({
     origin: '*',
     credentials: true,
@@ -18,18 +46,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ===== LOGS =====
+// Log de peticiones entrantes
 app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${req.method} ${req.originalUrl}`);
-    console.log(`[${timestamp}] 🔐 Auth header:`, req.headers.authorization ? '✅ Presente' : '❌ Ausente');
+    console.log(`📥 ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// ===== RUTAS =====
+// Rutas
 app.use('/', gatewayRouter);
 
-// ===== ERROR HANDLING =====
+// Manejo de errores
 app.use((err, req, res, next) => {
     console.error('🔥 Error en Gateway:', err.message);
     
@@ -48,34 +74,13 @@ app.use((err, req, res, next) => {
     });
 });
 
-// ===== INICIAR =====
+// Iniciar servidor
 const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log('\n' + '='.repeat(60));
-    console.log(`✅ GATEWAY INICIADO`);
-    console.log('='.repeat(60));
-    console.log(`📡 Puerto: ${PORT}`);
-    console.log(`🌐 URL: http://localhost:${PORT}`);
-    console.log('='.repeat(60));
-    console.log('\n🔗 ENDPOINTS DISPONIBLES:');
-    console.log('\n❤️  HEALTH CHECKS:');
-    console.log(`   GET  http://localhost:${PORT}/health`);
-    console.log(`   GET  http://localhost:${PORT}/usuarios/health`);      
-    console.log(`   GET  http://localhost:${PORT}/medidas/health`);       
-    
-    console.log('\n🔐 AUTENTICACIÓN:');
-    console.log(`   POST http://localhost:${PORT}/usuarios/auth/login`);  
-    
-    console.log('\n👥 USUARIOS:');
-    console.log(`   GET  http://localhost:${PORT}/usuarios`);             
-    console.log(`   POST http://localhost:${PORT}/usuarios`);             
-    
-    console.log('\n🛡️  MEDIDAS:');
-    console.log(`   GET  http://localhost:${PORT}/medidas`);              
-    console.log(`   POST http://localhost:${PORT}/medidas/completa/nueva`); 
-    
-    console.log('\n🧪 TESTS:');
-    console.log(`   POST http://localhost:8080/test-login`);
-    console.log('='.repeat(60) + '\n');
+    console.log('\n========================================');
+    console.log('✅ GATEWAY INICIADO');
+    console.log('========================================');
+    console.log('🌐 Servicio funcionando correctamente');
+    console.log('========================================\n');
 });
 
 // Manejar cierre

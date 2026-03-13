@@ -2,6 +2,7 @@ let usuarioData = null;
 let modoEdicion = false;
 let datosOriginales = {};
 
+// Asegura que la página inicie en la parte superior
 (function() {
     window.scrollTo(0, 0);
     window.addEventListener('load', function() {
@@ -11,6 +12,7 @@ let datosOriginales = {};
     });
 })();
 
+// Muestra el overlay de carga con un texto opcional
 function showLoader(text = 'Cargando información...') {
     const loader = document.getElementById('loaderOverlay');
     const loaderText = document.getElementById('loaderText');
@@ -20,6 +22,7 @@ function showLoader(text = 'Cargando información...') {
     }
 }
 
+// Oculta el overlay de carga
 function hideLoader() {
     const loader = document.getElementById('loaderOverlay');
     if (loader) {
@@ -27,6 +30,7 @@ function hideLoader() {
     }
 }
 
+// Muestra un mensaje de éxito con SweetAlert
 async function mostrarExito(mensaje, titulo = '¡Éxito!') {
     return Swal.fire({
         title: titulo,
@@ -40,6 +44,7 @@ async function mostrarExito(mensaje, titulo = '¡Éxito!') {
     });
 }
 
+// Muestra un mensaje de error con SweetAlert
 async function mostrarError(mensaje, titulo = 'Error') {
     return Swal.fire({
         title: titulo,
@@ -51,6 +56,7 @@ async function mostrarError(mensaje, titulo = 'Error') {
     });
 }
 
+// Muestra una confirmación genérica con SweetAlert
 async function mostrarConfirmacion(pregunta, titulo = 'Confirmación', textoConfirmar = 'Sí', textoCancelar = 'No') {
     const result = await Swal.fire({
         title: titulo,
@@ -67,6 +73,7 @@ async function mostrarConfirmacion(pregunta, titulo = 'Confirmación', textoConf
     return result.isConfirmed;
 }
 
+// Muestra una confirmación crítica para cambios sensibles
 async function mostrarConfirmacionCritica(pregunta, titulo = '⚠️ Cambio de Contraseña', advertencia = '') {
     const result = await Swal.fire({
         title: titulo,
@@ -92,20 +99,18 @@ async function mostrarConfirmacionCritica(pregunta, titulo = '⚠️ Cambio de C
     return result.isConfirmed;
 }
 
+// Ejecuta el cierre de sesión y redirige al login
 function ejecutarCierreSesion(mensaje = 'Sesión cerrada por seguridad') {
-    console.log('🔒 Ejecutando cierre de sesión...');
-
     hideLoader();
-
     localStorage.removeItem('sirevif_token');
     localStorage.removeItem('sirevif_usuario');
     sessionStorage.clear();
-
     setTimeout(() => {
         window.location.href = '/Frontend/HTML/login.html';
     }, 500);
 }
 
+// Configura el toggle para mostrar/ocultar la contraseña
 function setupPasswordToggle() {
     const passwordToggle = document.getElementById('passwordToggle');
     const mostrar = document.getElementById('mostrar');
@@ -113,7 +118,6 @@ function setupPasswordToggle() {
     const input = document.getElementById('contraseñaUsuario');
     
     if (!passwordToggle || !mostrar || !ocultar || !input) {
-        console.error('❌ Elementos del toggle no encontrados');
         return;
     }
 
@@ -130,10 +134,9 @@ function setupPasswordToggle() {
         mostrar.style.display = 'inline';
         ocultar.style.display = 'none';
     });
-    
-    console.log('✅ Toggle de contraseña configurado correctamente');
 }
 
+// Controla la visibilidad del toggle de contraseña
 function togglePasswordVisibility(mostrar) {
     const passwordToggle = document.getElementById('passwordToggle');
     if (passwordToggle) {
@@ -141,19 +144,15 @@ function togglePasswordVisibility(mostrar) {
     }
 }
 
+// Carga la información del usuario desde localStorage y la muestra en el formulario
 async function cargarInformacionUsuario() {
-    console.log('🔍 Iniciando carga de información del usuario...');
     showLoader();
     
     try {
         const token = localStorage.getItem('sirevif_token');
         const usuarioStorage = localStorage.getItem('sirevif_usuario');
         
-        console.log('🔍 Token en localStorage:', token ? '✅ Presente' : '❌ Ausente');
-        
         if (!token || !usuarioStorage) {
-            console.error('❌ ERROR: No hay sesión activa en localStorage');
-
             await Swal.fire({
                 title: 'Sesión no iniciada',
                 text: 'No se ha detectado una sesión activa. Serás redirigido a la página de inicio de sesión.',
@@ -167,13 +166,10 @@ async function cargarInformacionUsuario() {
             }).then(() => {
                 window.location.href = '/Frontend/HTML/login.html';
             });
-            
             return;
         }
         
         usuarioData = JSON.parse(usuarioStorage);
-        
-        console.log('🔍 Usuario completo:', usuarioData);
         
         const campos = {
             'nombreUsuario': usuarioData.nombre || '',
@@ -184,7 +180,6 @@ async function cargarInformacionUsuario() {
             'comisariaUsuario': usuarioData.comisaria_rol || '',
             'contraseñaUsuario': '••••••••'
         };
-        
 
         for (const [id, valor] of Object.entries(campos)) {
             const elemento = document.getElementById(id);
@@ -192,16 +187,11 @@ async function cargarInformacionUsuario() {
                 elemento.value = valor;
                 elemento.readOnly = true;
                 elemento.classList.add('read-only');
-                console.log(`✅ Campo ${id}: "${valor}"`);
-            } else {
-                console.error(`❌ No se encontró el elemento con ID: ${id}`);
             }
         }
         
-        // Ocultar toggle de contraseña al inicio
         togglePasswordVisibility(false);
         
-        // Actualizar header
         const nombreHeader = document.getElementById('nombreUsuarioHeader');
         const comisariaHeader = document.getElementById('comisariaUsuarioHeader');
         
@@ -211,14 +201,12 @@ async function cargarInformacionUsuario() {
                 textoHeader += ` - ${usuarioData.cargo}`;
             }
             nombreHeader.textContent = textoHeader;
-            console.log('✅ Header nombre actualizado:', textoHeader);
         }
         
         if (comisariaHeader) {
             comisariaHeader.textContent = usuarioData.comisaria_rol || 'Comisaría';
         }
         
-        // Guardar datos originales
         datosOriginales = {
             nombre: usuarioData.nombre || '',
             correo: usuarioData.correo || '',
@@ -227,11 +215,9 @@ async function cargarInformacionUsuario() {
             comisaria_rol: usuarioData.comisaria_rol || '',
         };
         
-        console.log('✅ Datos originales guardados:', datosOriginales);
         hideLoader();
         
     } catch (error) {
-        console.error('❌ Error al cargar usuario:', error);
         await mostrarError('Error al cargar información del usuario: ' + error.message);
         hideLoader();
         
@@ -241,14 +227,11 @@ async function cargarInformacionUsuario() {
     }
 }
 
+// Activa el modo edición permitiendo modificar ciertos campos
 function activarModoEdicion() {
-    console.log('🔧 Activando modo edición...');
     modoEdicion = true;
-    
-    // Mostrar toggle de contraseña
     togglePasswordVisibility(true);
     
-    // Habilitar campos editables (NO obligatorios individualmente)
     const camposEditables = [
         'correoUsuario',
         'telefonoUsuario', 
@@ -263,13 +246,11 @@ function activarModoEdicion() {
             field.classList.add('edit-mode');
             field.readOnly = false;
             
-            // Para la contraseña, limpiar el campo al editar
             if (fieldId === 'contraseñaUsuario') {
                 field.value = '';
                 field.placeholder = 'Dejar vacío para mantener la contraseña actual';
                 field.type = 'password';
                 
-                // Resetear iconos del toggle
                 const mostrar = document.getElementById('mostrar');
                 const ocultar = document.getElementById('ocultar');
                 if (mostrar && ocultar) {
@@ -280,7 +261,6 @@ function activarModoEdicion() {
         }
     });
     
-    // Deshabilitar campos no editables
     const camposNoEditables = [
         'nombreUsuario',
         'documentoUsuario',
@@ -295,7 +275,6 @@ function activarModoEdicion() {
         }
     });
     
-    // Mostrar/ocultar botones
     const editarBtn = document.getElementById('editarBtn');
     const cancelarBtn = document.getElementById('cancelarBtn');
     const guardarBtn = document.getElementById('guardarBtn');
@@ -304,19 +283,15 @@ function activarModoEdicion() {
     if (cancelarBtn) cancelarBtn.style.display = 'inline-block';
     if (guardarBtn) guardarBtn.style.display = 'inline-block';
     
-    // Enfocar en el primer campo editable
     const primerCampo = document.getElementById('correoUsuario');
     if (primerCampo) primerCampo.focus();
 }
 
+// Desactiva el modo edición y restaura los valores originales
 function desactivarModoEdicion() {
-    console.log('🔧 Desactivando modo edición...');
     modoEdicion = false;
-    
-    // Ocultar toggle de contraseña
     togglePasswordVisibility(false);
     
-    // Restaurar valores originales
     const correoField = document.getElementById('correoUsuario');
     const telefonoField = document.getElementById('telefonoUsuario');
     const cargoField = document.getElementById('cargoUsuario');
@@ -331,7 +306,6 @@ function desactivarModoEdicion() {
         passwordField.type = 'password';
     }
     
-    // Restaurar todos los campos a readonly
     const todosLosCampos = document.querySelectorAll('#formularioUsuarios input');
     todosLosCampos.forEach(field => {
         field.classList.remove('edit-mode');
@@ -340,7 +314,6 @@ function desactivarModoEdicion() {
         field.readOnly = true;
     });
     
-    // Mostrar/ocultar botones
     const editarBtn = document.getElementById('editarBtn');
     const cancelarBtn = document.getElementById('cancelarBtn');
     const guardarBtn = document.getElementById('guardarBtn');
@@ -350,8 +323,9 @@ function desactivarModoEdicion() {
     if (guardarBtn) guardarBtn.style.display = 'none';
 }
 
+// Valida el formato de un correo electrónico
 function validarCorreo(correo) {
-    if (!correo) return { valido: true, mensaje: '' }; 
+    if (!correo) return { valido: true, mensaje: '' };
     
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(correo)) {
@@ -363,8 +337,9 @@ function validarCorreo(correo) {
     return { valido: true, mensaje: '' };
 }
 
+// Valida que el teléfono contenga solo números y tenga entre 7 y 15 dígitos
 function validarTelefono(telefono) {
-    if (!telefono) return { valido: true, mensaje: '' }; 
+    if (!telefono) return { valido: true, mensaje: '' };
 
     const regex = /^[0-9]{7,15}$/;
     if (!regex.test(telefono)) {
@@ -376,6 +351,7 @@ function validarTelefono(telefono) {
     return { valido: true, mensaje: '' };
 }
 
+// Valida que el cargo no exceda los 100 caracteres
 function validarCargo(cargo) {
     if (cargo && cargo.trim().length > 100) {
         return { 
@@ -386,14 +362,12 @@ function validarCargo(cargo) {
     return { valido: true, mensaje: '' };
 }
 
+// Guarda los cambios realizados en el formulario
 async function guardarCambios() {
-    console.log('💾 Guardando cambios...');
-    
     try {
         const token = localStorage.getItem('sirevif_token');
         if (!token) throw new Error('No hay sesión activa');
         
-        // Obtener valores del formulario
         const correoField = document.getElementById('correoUsuario');
         const telefonoField = document.getElementById('telefonoUsuario');
         const cargoField = document.getElementById('cargoUsuario');
@@ -407,19 +381,9 @@ async function guardarCambios() {
         const nuevoTelefono = telefonoField.value.trim();
         const nuevoCargo = cargoField.value.trim();
         const nuevaContraseña = passwordField.value.trim();
-        
-        console.log('📤 Datos capturados:', {
-            correo: nuevoCorreo,
-            telefono: nuevoTelefono,
-            cargo: nuevoCargo,
-            tieneContraseña: nuevaContraseña ? 'SÍ' : 'NO'
-        });
-        
-        console.log('📊 Datos originales:', datosOriginales);
 
         const validaciones = [];
         
-        // Validar campos que se están cambiando
         if (nuevoCorreo !== datosOriginales.correo) {
             const validacionCorreo = validarCorreo(nuevoCorreo);
             if (!validacionCorreo.valido) {
@@ -436,16 +400,13 @@ async function guardarCambios() {
             }
         }
         
-        // El cargo siempre se valida (puede estar vacío)
         const validacionCargo = validarCargo(nuevoCargo);
         if (!validacionCargo.valido) {
             validaciones.push(validacionCargo.mensaje);
             cargoField.classList.add('error-input');
         }
         
-        // Si hay errores de validación, mostrarlos
         if (validaciones.length > 0) {
-            // Remover clases de error después de 3 segundos
             setTimeout(() => {
                 correoField.classList.remove('error-input');
                 telefonoField.classList.remove('error-input');
@@ -458,9 +419,6 @@ async function guardarCambios() {
         let cambioContraseñaConfirmado = true;
         
         if (nuevaContraseña && nuevaContraseña !== '••••••••') {
-            console.log('⚠️ USUARIO CAMBIANDO SU PROPIA CONTRASEÑA');
-            
-            // NO mostrar loader antes de la confirmación
             cambioContraseñaConfirmado = await mostrarConfirmacionCritica(
                 '¿Está seguro de cambiar su contraseña?',
                 'Cambio de Contraseña',
@@ -468,11 +426,8 @@ async function guardarCambios() {
             );
             
             if (!cambioContraseñaConfirmado) {
-                console.log('❌ Cambio de contraseña cancelado por el usuario');
                 return;
             }
-            
-            console.log('✅ Confirmado: Cambiando contraseña propia');
         }
 
         const datosParaEnviar = {
@@ -487,8 +442,6 @@ async function guardarCambios() {
         if (nuevaContraseña && nuevaContraseña !== '••••••••') {
             datosParaEnviar.contraseña = nuevaContraseña;
         }
-        
-        console.log('📤 Datos completos para enviar al backend:', datosParaEnviar);
 
         const camposRequeridos = ['nombre', 'documento', 'cargo', 'correo', 'telefono', 'comisaria_rol'];
         const camposFaltantes = camposRequeridos.filter(campo => !datosParaEnviar[campo] && datosParaEnviar[campo] !== '');
@@ -503,8 +456,6 @@ async function guardarCambios() {
 
         showLoader('Guardando cambios...');
         
-        console.log(`📤 Enviando PUT a: http://localhost:8080/usuarios/${usuarioData.id}`);
-        
         const response = await fetch(`http://localhost:8080/usuarios/${usuarioData.id}`, {
             method: 'PUT',
             headers: {
@@ -513,17 +464,13 @@ async function guardarCambios() {
             },
             body: JSON.stringify(datosParaEnviar)
         });
-        
-        console.log('📥 Respuesta del servidor - Status:', response.status);
 
         const responseText = await response.text();
-        console.log('📥 Respuesta del servidor - Text:', responseText);
         
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (e) {
-            console.error('❌ Error parseando respuesta:', e);
             data = { message: 'Respuesta inválida del servidor' };
         }
         
@@ -534,16 +481,9 @@ async function guardarCambios() {
 
             if (response.status === 400) {
                 errorMsg = 'Error en los datos: ' + (data.message || 'Verifica que todos los campos estén completos');
-
-                console.error('❌ Error 400 - Detalles:', {
-                    datosEnviados: datosParaEnviar,
-                    respuesta: data,
-                    camposFaltantes: camposFaltantes
-                });
                 
             } else if (response.status === 401) {
                 errorMsg = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-
                 setTimeout(() => {
                     window.location.href = '/Frontend/HTML/login.html';
                 }, 3000);
@@ -553,8 +493,6 @@ async function guardarCambios() {
             
             throw new Error(errorMsg);
         }
-        
-        console.log('📥 Respuesta del servidor - Data:', data);
 
         if (data && (data.id || data.success)) {
             const usuarioActualizado = data.data || data;
@@ -562,7 +500,6 @@ async function guardarCambios() {
                 ...usuarioData,
                 ...usuarioActualizado
             };
-            console.log('✅ Usuario actualizado con datos del backend:', usuarioData);
         } else {
             usuarioData.correo = nuevoCorreo;
             usuarioData.telefono = nuevoTelefono;
@@ -584,14 +521,11 @@ async function guardarCambios() {
         if (nuevaContraseña && nuevaContraseña !== '••••••••' && cambioContraseñaConfirmado) {
             hideLoader();
             await mostrarExito('Contraseña actualizada. Cerrando sesión...', 'Cambio Exitoso');
-
             setTimeout(() => {
                 ejecutarCierreSesion('Tu contraseña ha sido cambiada. Por seguridad, debes iniciar sesión nuevamente.');
             }, 0);
-            
             return; 
         }
-        
 
         datosOriginales = {
             nombre: usuarioData.nombre,
@@ -603,110 +537,17 @@ async function guardarCambios() {
         
         hideLoader();
         await mostrarExito('✅ Información actualizada correctamente');
-
         desactivarModoEdicion();
         
-        console.log('✅ Cambios guardados exitosamente');
-        
     } catch (error) {
-        // Asegurarse de ocultar el loader si hay error
         hideLoader();
-        console.error('❌ Error al guardar:', error);
         await mostrarError(error.message || 'Error al guardar cambios');
     }
 }
 
-async function forzarRecargaDesdeBackend() {
-    console.log('🔄 Forzando recarga de datos desde backend...');
-    showLoader('Actualizando información...');
-    
-    try {
-        const token = localStorage.getItem('sirevif_token');
-        if (!token) throw new Error('No hay sesión activa');
-        
-        // Obtener ID del usuario
-        const usuarioStorage = localStorage.getItem('sirevif_usuario');
-        if (!usuarioStorage) throw new Error('No hay datos de usuario');
-        
-        const usuarioDataTemp = JSON.parse(usuarioStorage);
-        const userId = usuarioDataTemp.id;
-        
-        if (!userId) {
-            console.error('❌ No se encontró ID de usuario');
-            await mostrarError('No se pudo identificar al usuario');
-            return;
-        }
-        
-        // Hacer petición al backend para obtener datos actualizados
-        console.log(`🔄 Consultando usuario con ID: ${userId}`);
-        const response = await fetch(`http://localhost:8080/usuarios/${userId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Error ${response.status} al obtener datos del usuario`);
-        }
-        
-        const usuarioActualizado = await response.json();
-        console.log('✅ Datos obtenidos del backend:', usuarioActualizado);
-        
-        // Guardar en localStorage
-        localStorage.setItem('sirevif_usuario', JSON.stringify(usuarioActualizado));
-        
-        // Recargar la información
-        await cargarInformacionUsuario();
-        
-        await mostrarExito('✅ Información actualizada desde el servidor');
-        
-    } catch (error) {
-        console.error('❌ Error al forzar recarga:', error);
-        await mostrarError('No se pudo actualizar la información: ' + error.message);
-    } finally {
-        hideLoader();
-    }
-}
-
-async function logout() {
-    const confirmado = await mostrarConfirmacion(
-        '¿Estás seguro de que quieres cerrar sesión?',
-        'Cerrar Sesión'
-    );
-    
-    if (confirmado) {
-        localStorage.removeItem('sirevif_token');
-        localStorage.removeItem('sirevif_usuario');
-        window.location.href = '/Frontend/HTML/login.html';
-    }
-}
-
-window.depurarUsuarioData = function() {
-    console.log('=== DEPURACIÓN DE USUARIO DATA ===');
-    const usuarioStorage = localStorage.getItem('sirevif_usuario');
-    if (!usuarioStorage) {
-        console.log('❌ No hay datos de usuario en localStorage');
-        return;
-    }
-    
-    const usuarioData = JSON.parse(usuarioStorage);
-    console.log('Datos completos:', usuarioData);
-    
-    console.log('=== PROPIEDADES ===');
-    for (const key in usuarioData) {
-        console.log(`${key}: ${usuarioData[key]} (tipo: ${typeof usuarioData[key]})`);
-    }
-    
-    return usuarioData;
-};
-
+// Inicialización al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 miCuenta.js inicializado correctamente');
-
     setupPasswordToggle();
-
     cargarInformacionUsuario();
 
     const editarBtn = document.getElementById('editarBtn');
@@ -734,7 +575,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modalCerrarSesion = document.getElementById('divCerrarSesion');
     if (modalCerrarSesion) {
-        // Ocultar modal al inicio
         modalCerrarSesion.style.display = 'none';
         
         const cerrarSesionBtn = document.getElementById('cerrarSesion');

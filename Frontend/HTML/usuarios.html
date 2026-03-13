@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="/Frontend/CSS/barraLateral.css">
     <link rel="icon" href="/Frontend/images/logoAlcaldia.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <title>SIREVIF 2.0 - Usuarios</title>
+    <title>SIRVIT - Usuarios</title>
 </head>
 <body>
+    <!-- Barra lateral de navegación -->
     <header id="barra" class="barra">
         <img id="menuHamburguesa" class="hamburguesa" src="/Frontend/images/hamburguesa.png" alt="Menú">
         <img id="logo" class="logo" src="/Frontend/images/logoAlcaldia.png" alt="Logo">
-        <p id="titulo" class="titulo">SIREVIF 2.0</p>
+        <p id="titulo" class="titulo">SIRVIT</p>
         <p id="nombreUsuarioHeader" class="texto">Cargando...</p>
         <p id="comisariaUsuarioHeader" class="texto">Cargando...</p>
         <nav>
@@ -44,7 +45,7 @@
     <h1 class="tituloUsuarios">Usuarios Registrados</h1>
     <button class="añadir" id="abrirFormulario">Crear Nuevo Usuario <img src="/Frontend/images/añadir.png" alt="Añadir"></button>
     
-    <!-- Diálogo de confirmación para cerrar sesión -->
+    <!-- Modal de confirmación para cerrar sesión -->
     <div id="divCerrarSesion" class="fondoCerrarSesion" style="display: none;">
         <div class="cerrarSesion">
             <img src="/Frontend/images/logoAlcaldia.png" class="imgCerrarSesion" alt="Logo">
@@ -56,7 +57,7 @@
         </div>
     </div>
 
-    <!-- Secciones para organizar usuarios por comisaría -->
+    <!-- Secciones de usuarios organizadas por comisaría -->
     <div class="seccionaes">
         <div class="seccionUsuarios">
             <h2 class="tituloSec">Administrador</h2>
@@ -91,10 +92,12 @@
         <div class="seccionUsuarios">
             <h2 class="tituloSec">Usuarios Comisaría Sexta</h2>
             <div class="usuarios"></div>
-        </div>
+        </div><p class="mensaje">- El mínimo de caracteres es de
     </div>
 
-    <!-- Formulario overlay para crear/editar usuarios -->
+    <button id="btnConfigLimites" class="btn-config-limites-flotante" onclick="window.abrirModalLimites()" title="Configurar límites de usuarios"><img src="/Frontend/images/config.png" alt=""></button>
+
+    <!-- Formulario para crear/editar usuarios -->
     <div id="formularioOverlay" class="fondoF" style="display: none;">
         <div class="formulario">
             <div class="headerF">
@@ -104,7 +107,7 @@
             
             <form id="formularioUsuarios" autocomplete="off">
                 <div class="seccionF">
-                    <!-- Primera fila: Nombre, Documento, Cargo -->
+                    <!-- Primera tabla: Nombre, Documento, Cargo -->
                     <table class="tablaF">
                         <tr>
                             <td>Nombre completo:</td>
@@ -112,23 +115,23 @@
                             <td>Cargo:</td>
                         </tr>
                         <tr>
-                            <td>
+                            <td data-label="Nombre completo:">
                                 <input autocomplete="off" type="text" name="nombreUsuario" id="nombreUsuario">
                                 <p class="mensaje">- El <strong>Nombre completo</strong> es requerido</p>
                             </td>
-                            <td>
+                            <td data-label="Número de Documento:">
                                 <input autocomplete="off" type="number" name="documentoUsuario" id="documentoUsuario" inputmode="numeric" pattern="[0-9]*">
                                 <p class="mensaje">- El <strong>Número de documento</strong> es requerido</p>
-                                <p class="mensaje">- El mínimo de caracteres es de 7</p>
+                                <p class="mensaje">- El mínimo de caracteres es de 6</p>
                             </td>
-                            <td>
+                            <td data-label="Cargo:">
                                 <input autocomplete="off" type="text" name="cargoUsuario" id="cargoUsuario">
                                 <p class="mensaje">- El <strong>Cargo</strong> es requerido</p>
                             </td>
                         </tr>
                     </table>
                     
-                    <!-- Segunda fila: Correo, Teléfono, Rol -->
+                    <!-- Segunda tabla: Correo, Teléfono, Rol -->
                     <table class="tablaF">
                         <tr>
                             <td>Correo:</td>
@@ -136,17 +139,17 @@
                             <td>Rol:</td>
                         </tr>
                         <tr>
-                            <td>
+                            <td data-label="Correo:">
                                 <input class="correo" autocomplete="off" type="email" name="correoUsuario" id="correoUsuario">
                                 <p class="mensaje">- El <strong>Correo</strong> es requerido</p>
                                 <p class="mensaje">- Ingrese un correo válido</p>
                             </td>
-                            <td>
+                            <td data-label="Teléfono:">
                                 <input autocomplete="off" type="tel" name="telefonoUsuario" id="telefonoUsuario" inputmode="numeric" pattern="[0-9]*">
                                 <p class="mensaje">- El <strong>Teléfono</strong> es requerido</p>
                                 <p class="mensaje">- El mínimo de caracteres es de 10</p>
                             </td>
-                            <td>
+                            <td data-label="Rol:">
                                 <select id="comisariaUsuario" name="comisariaUsuario" autocomplete="off">
                                     <option value="">- - Seleccione - -</option>
                                     <option value="Comisaría Primera">Comisaría Primera</option>
@@ -162,7 +165,7 @@
                         </tr>
                     </table>
                     
-                    <!-- Tercera fila: Contraseña -->
+                    <!-- Tercera tabla: Contraseña -->
                     <table class="tablaF">
                         <tr>
                             <td></td>
@@ -171,7 +174,7 @@
                         </tr>
                         <tr>
                             <td></td>
-                            <td>
+                            <td data-label="Contraseña:">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="position: relative; flex: 1;">
                                         <input autocomplete="new-password" type="password" id="contraseñaUsuario" 
@@ -194,10 +197,10 @@
                     </table>
                 </div>
                 
-                <!-- Botón de acción -->
+                <!-- Botón de acción del formulario -->
                 <div class="boton-container">
                     <button class="botonGuardar" id="crearUsuario" type="button">Crear</button>
-                </div>
+                </div>                
             </form>
         </div>
     </div>
@@ -205,26 +208,32 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/Frontend/JS/barraLateral.js"></script>
-    <script src="/Frontend/JS/infoBarra.js"></script>
     <script src="/Frontend/JS/timeout.js"></script>
-    <script src="/Frontend/JS/configuracionLimites.js"></script>
-    
-    <!-- Archivo combinado de usuarios -->
     <script src="/Frontend/JS/usuarios.js"></script>
-    
-    <!-- Script de inicialización MODIFICADO -->
+    <script src="/Frontend/JS/limites.js"></script>
+
+    <!-- Eliminar botón de límites duplicado si limites.js crea uno extra -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 DOM cargado - Inicializando página de usuarios...');
-        
-        // Verificar token
+        setTimeout(function() {
+            var botones = document.querySelectorAll('.btn-config-limites-flotante');
+            if (botones.length > 1) {
+                for (var i = 1; i < botones.length; i++) {
+                    botones[i].remove();
+                }
+            }
+        }, 600);
+    });
+    </script>
+    
+    <!-- Script de inicialización -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {        
+        // Verificar token y sesión activa
         const token = localStorage.getItem('sirevif_token');
         const usuario = localStorage.getItem('sirevif_usuario');
         
-        if (!token || !usuario) {
-            console.log('🔒 No hay sesión activa - Mostrando ventana emergente...');
-            
-            // Usar SweetAlert2 para mostrar ventana emergente central
+        if (!token || !usuario) {            
             Swal.fire({
                 title: 'Sesión no iniciada',
                 text: 'No se ha detectado una sesión activa. Serás redirigido a la página de inicio de sesión.',
@@ -234,24 +243,14 @@
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showCloseButton: false,
-                backdrop: true,
-                willOpen: () => {
-                    console.log('📋 Mostrando ventana de sesión expirada');
-                },
-                willClose: () => {
-                    console.log('🔄 Redirigiendo al login...');
-                    window.location.href = '/Frontend/HTML/login.html';
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/Frontend/HTML/login.html';
-                }
-            });
-            
+                backdrop: true
+            }).then(() => {
+                window.location.href = '/Frontend/HTML/login.html';
+            });            
             return;
         }
         
-        // Configurar logout
+        // Configurar botón de logout
         const logoutBtn = document.getElementById('logoutBtn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(e) {
@@ -260,6 +259,7 @@
             });
         }
         
+        // Configurar botón de cancelar en modal de logout
         const cancelarCerrarBtn = document.getElementById('cancelarCerrarSesion');
         if (cancelarCerrarBtn) {
             cancelarCerrarBtn.addEventListener('click', function() {
@@ -267,6 +267,7 @@
             });
         }
         
+        // Configurar botón de confirmar logout
         const confirmarCerrarBtn = document.getElementById('cerrarSesion');
         if (confirmarCerrarBtn) {
             confirmarCerrarBtn.addEventListener('click', function() {
@@ -283,26 +284,10 @@
         // Inicializar sistema de usuarios
         setTimeout(() => {
             if (typeof inicializarUsuarios === 'function') {
-                console.log('🔄 Inicializando sistema de usuarios...');
                 inicializarUsuarios();
-            } else {
-                console.error('❌ Error: función inicializarUsuarios no encontrada');
-                // Mostrar error silencioso en consola, no al usuario
             }
         }, 300);
     });
-    
-    // Función global para debug (solo disponible en consola)
-    window.debugUsuarios = function() {
-        console.log('=== DEBUG USUARIOS ===');
-        console.log('Token:', localStorage.getItem('sirevif_token') ? '✓ Presente' : '✗ Ausente');
-        console.log('Usuario:', localStorage.getItem('sirevif_usuario'));
-        console.log('Funciones disponibles:');
-        console.log('  - renderizarUsuarios:', typeof renderizarUsuarios);
-        console.log('  - cargarUsuarios:', typeof cargarUsuarios);
-        console.log('  - inicializarUsuarios:', typeof inicializarUsuarios);
-        console.log('=== FIN DEBUG ===');
-    };
     </script>
 </body>
 </html>

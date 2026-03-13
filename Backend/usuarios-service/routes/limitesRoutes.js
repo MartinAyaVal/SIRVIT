@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const limitesController = require('../controllers/limitesController.js');
-
-// Middleware de autenticación y verificación de admin
 const authMiddleware = require('../middleware/authMiddleware.js');
 
+// Middleware para verificar rol de administrador
 const verificarRolAdministrador = (req, res, next) => {
   try {
     const usuario = req.usuario;
@@ -21,15 +20,12 @@ const verificarRolAdministrador = (req, res, next) => {
       return res.status(403).json({
         success: false,
         error: 'Acceso denegado',
-        message: 'Solo administradores pueden gestionar límites de usuarios.',
-        userRole: usuario.rolId,
-        requiredRole: 1
+        message: 'Solo administradores pueden gestionar límites de usuarios.'
       });
     }
     
     next();
   } catch (error) {
-    console.error('Error al verificar rol:', error);
     res.status(500).json({
       success: false,
       error: 'Error de autorización',
@@ -38,20 +34,20 @@ const verificarRolAdministrador = (req, res, next) => {
   }
 };
 
-// GET /api/limites - Obtener todos los límites
+// Obtener todos los límites
 router.get('/', 
   authMiddleware.autenticarToken, 
   verificarRolAdministrador,
   limitesController.getLimites
 );
 
-// GET /api/limites/:comisaria_rol - Obtener límite específico
+// Obtener límite específico
 router.get('/:comisaria_rol',
   authMiddleware.autenticarToken,
   limitesController.getLimiteByComisaria
 );
 
-// PUT /api/limites/:comisaria_rol - Actualizar límite
+// Actualizar límite
 router.put('/:comisaria_rol',
   authMiddleware.autenticarToken,
   verificarRolAdministrador,

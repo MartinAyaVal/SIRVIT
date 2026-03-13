@@ -1,111 +1,78 @@
-// medidas-service/server.js
 const express = require('express');
 const cors = require('cors');
+const sequelize = require('./db/config.js');
 const medidasRoutes = require('./routes/medidasRoutes.js');
+require('dotenv').config();
+
+// Silenciar logs
+process.env.DEBUG = 'none';
+process.env.NODE_ENV = 'production';
 
 const app = express();
-const PORT = process.env.PORT || 3002;
 
-// ===== MIDDLEWARE =====
+// Configuración CORS
 app.use(cors({
-  origin: '*',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-User-ID', 'X-User-Documento', 'X-User-Rol', 'X-User-Nombre', 'X-User-Comisaria']
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Log mínimo de peticiones
+app.use((req, res, next) => {
+    console.log(`📥 ${req.method} ${req.url}`);
+    next();
+});
 
-// ===== RUTAS API =====
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Rutas
 app.use('/api/medidas', medidasRoutes);
-
-// ===== RUTAS DEL SERVICIO =====
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    service: 'medidas-service',
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      createMedidaCompleta: 'POST /api/medidas/completa/nueva',
-      getMedidas: 'GET /api/medidas',
-      getMedidaCompleta: 'GET /api/medidas/completa/:id'
-    }
-  });
+    res.json({ 
+        status: 'OK', 
+        service: 'medidas-service',
+        timestamp: new Date().toISOString()
+    });
 });
 
-// Ruta raíz informativa
-app.get('/', (req, res) => {
-  res.json({
-    service: 'medidas-service',
-    port: PORT,
-    status: 'active',
-    timestamp: new Date().toISOString(),
-    note: 'Este servicio es accedido a través del gateway en puerto 8080',
-    exampleRequest: {
-      method: 'POST',
-      url: 'http://localhost:8080/usuarios/completa/nueva',
-      headers: {
-        'Authorization': 'Bearer [tu_token]',
-        'Content-Type': 'application/json'
-      },
-      body: {
-        medida: {
-          numeroMedida: 1001,
-          lugarHechos: "Calle 123",
-          tipoViolencia: "fisica",
-          fechaUltimosHechos: "2024-12-24",
-          horaUltimosHechos: "14:30:00",
-          comisariaId: 1,
-          usuarioId: 1
-        },
-        victimario: { /* ... */ },
-        victimas: [ /* ... */ ]
-      }
-    }
-  });
-});
-
-// Error handling
+// Manejo de errores
 app.use((err, req, res, next) => {
-  console.error('🔥 Error:', err.stack);
-  res.status(500).json({
-    success: false,
-    error: 'Error interno del servidor',
-    message: err.message,
-    timestamp: new Date().toISOString()
-  });
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ 
+            error: 'JSON mal formado',
+            message: 'El cuerpo de la solicitud no es un JSON válido'
+        });
+    }
+    
+    console.error('❌ Error:', err.message);
+    res.status(500).json({ 
+        error: 'Error interno del servidor',
+        message: err.message
+    });
 });
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Ruta no encontrada',
-    message: `La ruta ${req.path} no existe en medidas-service`,
-    availableEndpoints: [
-      'POST /api/medidas/completa/nueva',
-      'GET /api/medidas',
-      'GET /api/medidas/completa/:id',
-      'GET /health'
-    ],
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('\n' + '='.repeat(60));
-  console.log('🚀 MEDIDAS-SERVICE');
-  console.log('='.repeat(60));
-  console.log(`📡 Puerto: ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`❤️  Health: http://localhost:${PORT}/health`);
-  console.log(`📊 API: http://localhost:${PORT}/api/medidas`);
-  console.log('='.repeat(60));
-  console.log('\n🎯 ACCESO A TRAVÉS DEL GATEWAY:');
-  console.log('   🟢 POST http://localhost:8080/medidas/completa/nueva'); 
-  console.log('   🔵 GET  http://localhost:8080/medidas/*');
-  console.log('='.repeat(60) + '\n');
-});
+// Iniciar servidor
+sequelize.authenticate()
+    .then(() => {
+        console.log('✅ Conectado a MySQL');
+        return sequelize.sync({ alter: true });
+    })
+    .then(() => {
+        console.log('🗄  Modelos sincronizados');
+        
+        const PORT = process.env.PORT || 3002;
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log('\n========================================');
+            console.log('✅ MEDIDAS SERVICE INICIADO');
+            console.log('========================================');
+            console.log('🌐 Servicio funcionando correctamente');
+            console.log('========================================\n');
+        });
+    })
+    .catch(err => {
+        console.error('❌ Error de base de datos:', err.message);
+        process.exit(1);
+    });

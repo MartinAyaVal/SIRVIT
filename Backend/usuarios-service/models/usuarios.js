@@ -109,8 +109,7 @@ module.exports = (sequelize) => {
     }
   }, {
     tableName: "usuarios",
-    timestamps: false,
-    // ¡NO HAY HOOKS! El hash se hace en el controller
+    timestamps: false
   });
 
   // Método para validar contraseña

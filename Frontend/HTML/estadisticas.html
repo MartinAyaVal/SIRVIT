@@ -8,13 +8,15 @@
     <link rel="stylesheet" href="/Frontend/CSS/barraLateral.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link rel="icon" href="/Frontend/images/logoAlcaldia.png">
-    <title>SIREVIF 2.0</title>
+    <title>SIRVIT - Estadísticas</title>
 </head>
 <body>
+
+    <!-- Barra de navegación superior -->
     <header id="barra" class="barra">
         <img id="menuHamburguesa" class="hamburguesa" src="/Frontend/images/hamburguesa.png" alt="">
         <img id="logo" class="logo" src="/Frontend/images/logoAlcaldia.png" alt="">
-        <p id="titulo" class="titulo">SIREVIF 2.0</p>
+        <p id="titulo" class="titulo">SIRVIT</p>
         <p id="nombreUsuarioHeader" class="texto">Cargando...</p>
         <p id="comisariaUsuarioHeader" class="texto">Cargando...</p>
         <nav>
@@ -22,11 +24,11 @@
                 <img class="imgBarra" src="/Frontend/images/medidas.png">
                 Medidas de Protección 
             </a>
-            <a id="boton" title="estadisticas" href="estadisticas.html" class="actual">
+            <a id="boton" title="Estadísticas" href="estadisticas.html" class="actual">
                 <img class="imgBarra" src="/Frontend/images/estadisticas.png">
                 Estadísticas
             </a>
-            <a id="botonUsuarios" title="Usuarios" href="usuarios.html" class="botonBarra">
+            <a id="botonUsuarios" title="Usuarios" href="usuarios.html" class="botonBarra" style="display: none;" adminOnly>
                 <img class="imgBarra" src="/Frontend/images/usuarios.png">
                 Usuarios
             </a>
@@ -41,6 +43,7 @@
         </a>
     </header>
 
+    <!-- Modal de confirmación para cerrar sesión -->
     <div id="divCerrarSesion" class="fondoCerrarSesion">
         <div class="cerrarSesion">
             <img src="/Frontend/images/logoAlcaldia.png" class="imgCerrarSesion">
@@ -52,9 +55,340 @@
         </div>
     </div>
 
+    <main class="contenedor-estadisticas">
+
+        <!-- Título de la página -->
+        <div class="contenedor-titulo-estadisticas">
+            <div class="titulo-pagina">
+                <h1>Estadísticas</h1>
+            </div>
+        </div>
+
+        <!-- Botones de selección de comisaría (solo visibles para administradores) -->
+        <section class="seccionBotonesComisarias">
+            <button class="botonC1">Comisaría 1</button>
+            <button class="botonC2">Comisaría 2</button>
+            <button class="botonC3">Comisaría 3</button>
+            <button class="botonC4">Comisaría 4</button>
+            <button class="botonC5">Comisaría 5</button>
+            <button class="botonC6">Comisaría 6</button>
+            <button class="botonTodos activo">Todos</button>
+        </section>
+
+        <!-- Panel de filtros por año y rango de fechas -->
+        <section class="filtros-estadisticas">
+            <div class="filtros-fila">
+                <div class="filtro-grupo">
+                    <label for="anioSelect">Año:</label>
+                    <select id="anioSelect">
+                        <option value="todos">Todos los años</option>
+                    </select>
+                </div>
+                
+                <div class="filtro-grupo">
+                    <label for="fechaInicio">Fecha inicio:</label>
+                    <input type="date" id="fechaInicio">
+                </div>
+                
+                <div class="filtro-grupo">
+                    <label for="fechaFin">Fecha fin:</label>
+                    <input type="date" id="fechaFin">
+                </div>
+                
+                <button id="aplicarFiltros" class="boton-aplicar-filtros">
+                    <img src="/Frontend/images/buscar.png" alt="Buscar">
+                    Aplicar Filtros
+                </button>
+            </div>
+        </section>
+
+        <!-- Contenedor principal del dashboard -->
+        <div class="estadisticas-contenido">
+
+            <!-- Spinner de carga mientras se obtienen los datos -->
+            <div id="estadoCarga" class="estado-carga">
+                <div class="spinner"></div>
+                <p>Cargando estadísticas...</p>
+            </div>
+
+            <!-- Dashboard con todos los gráficos y resúmenes -->
+            <div id="estadisticasDashboard" class="dashboard-estadisticas" style="display: none;">
+                
+                <!-- Tarjetas de resumen: medidas por comisaría y totales -->
+                <div class="resumen-layout">
+                    <div class="panel-comisarias" id="tarjetaMedidasPorComisaria">
+                        <div class="seccion-titulo-panel">
+                            <div class="panel-titulo-icono">
+                                <img src="/Frontend/images/estadisticas.png" alt="Comisarías">
+                            </div>
+                            <h2>Medidas por Comisaría</h2>
+                        </div>
+                        <div class="panel-comisarias-contenido">
+                            <canvas id="graficoMedidasPorComisaria" class="grafico-donut-comisarias"></canvas>
+                            <div class="tabla-comisarias-panel">
+                                <table class="tabla-comisarias">
+                                    <thead>
+                                        <tr>
+                                            <th>Comisaría</th>
+                                            <th>No. Medidas</th>
+                                            <th>Porcentaje</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comisariasLista"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-totales">
+                        <div class="tarjeta-total" id="tarjetaTotalMedidas">
+                            <div class="tarjeta-total-icono">
+                                <img src="/Frontend/images/medidas.png" alt="Medidas">
+                            </div>
+                            <div class="tarjeta-total-info">
+                                <h3>Total Medidas</h3>
+                                <p class="numero" id="totalMedidas">—</p>
+                            </div>
+                        </div>
+                        <div class="tarjeta-total" id="tarjetaTotalVictimas">
+                            <div class="tarjeta-total-icono">
+                                <img src="/Frontend/images/usuario.png" alt="Víctimas">
+                            </div>
+                            <div class="tarjeta-total-info">
+                                <h3>Total Víctimas</h3>
+                                <p class="numero" id="totalVictimas">—</p>
+                            </div>
+                        </div>
+                        <div class="tarjeta-total" id="tarjetaTotalVictimarios">
+                            <div class="tarjeta-total-icono">
+                                <img src="/Frontend/images/usuario.png" alt="Victimarios">
+                            </div>
+                            <div class="tarjeta-total-info">
+                                <h3>Total Victimarios</h3>
+                                <p class="numero" id="totalVictimarios">—</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sección de estadísticas de medidas -->
+                <section class="seccion-estadisticas">
+                    <div class="seccion-titulo">
+                        <img src="/Frontend/images/medidas.png" alt="Medidas">
+                        <h2>Estadísticas de Medidas</h2>
+                    </div>
+                    
+                    <div class="estadisticas-grid">
+                        <div class="estadistica-card">
+                            <h3>Estado de las Medidas</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstadoMedidas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstadoMedidas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstadoMedidas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Tipo de Violencia</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoTipoViolencia" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaTipoViolencia"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaTipoViolencia"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Solicitado por</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoSolicitadoPor" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaSolicitadoPor"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaSolicitadoPor"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección de estadísticas de víctimas -->
+                <section class="seccion-estadisticas">
+                    <div class="seccion-titulo">
+                        <img src="/Frontend/images/usuario.png" alt="Víctimas">
+                        <h2>Estadísticas de Víctimas</h2>
+                    </div>
+                    
+                    <div class="estadisticas-grid">
+                        <div class="estadistica-card">
+                            <h3>Sexo de Víctimas</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoSexoVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaSexoVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaSexoVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Edad de Víctimas</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEdadVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEdadVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEdadVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Tipo de Documento</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoTipoDocVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaTipoDocVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaTipoDocVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Comunidad LGBTI</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoLgtbiVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaLgtbiVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaLgtbiVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Grupos Étnicos</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEtniaVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEtniaVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEtniaVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Estrato Socioeconómico</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstratoVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstratoVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstratoVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Estado Civil</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstadoCivilVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstadoCivilVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstadoCivilVictimas"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Nivel de Estudios</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstudiosVictimas" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstudiosVictimas"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstudiosVictimas"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sección de estadísticas de victimarios -->
+                <section class="seccion-estadisticas">
+                    <div class="seccion-titulo">
+                        <img src="/Frontend/images/usuario.png" alt="Victimarios">
+                        <h2>Estadísticas de Victimarios</h2>
+                    </div>
+                    
+                    <div class="estadisticas-grid">
+                        <div class="estadistica-card">
+                            <h3>Sexo de Victimarios</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoSexoVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaSexoVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaSexoVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Edad de Victimarios</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEdadVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEdadVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEdadVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Tipo de Documento</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoTipoDocVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaTipoDocVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaTipoDocVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Comunidad LGBTI</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoLgtbiVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaLgtbiVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaLgtbiVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Grupos Étnicos</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEtniaVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEtniaVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEtniaVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Estrato Socioeconómico</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstratoVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstratoVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstratoVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Estado Civil</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstadoCivilVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstadoCivilVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstadoCivilVictimarios"></div>
+                        </div>
+
+                        <div class="estadistica-card">
+                            <h3>Nivel de Estudios</h3>
+                            <div class="grafico-pastel-container">
+                                <canvas id="graficoEstudiosVictimarios" class="grafico-pastel"></canvas>
+                                <div class="leyenda-pastel" id="leyendaEstudiosVictimarios"></div>
+                            </div>
+                            <div class="tabla-resumen" id="tablaEstudiosVictimarios"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Mensaje cuando no hay datos o hay error -->
+            <div id="sinDatos" class="sin-datos" style="display: none;">
+                <div style="font-size: 48px; margin-bottom: 20px; color: #999;">📊</div>
+                <h3 style="color: #666; margin-bottom: 10px;">No hay datos disponibles</h3>
+                <p style="color: #999;">No se encontraron estadísticas con los filtros seleccionados.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/Frontend/JS/barraLateral.js"></script>
-        <script src="/Frontend/JS/infoBarra.js"></script>
-        <script src="/Frontend/JS/timeout.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/Frontend/JS/timeout.js"></script>
+    <script src="/Frontend/JS/estadisticas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -70,38 +70,50 @@ module.exports = (sequelize) => {
     },
     numeroVictimas: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       defaultValue: 0,
       field: 'numero_victimas'
     },
     numeroVictimarios: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       defaultValue: 0,
       field: 'numero_victimarios'
     },
-    usuarioId: {
-      type: DataTypes.INTEGER,
+    nombreUsuarioCreador: {
+      type: DataTypes.STRING(255),
       allowNull: false,
-      field: 'usuario_id'  
+      field: 'nombre_usuario_creador'
     },
-    usuarioUltimaEdicionId: {
-      type: DataTypes.INTEGER,
+    nombreUsuarioEditor: {
+      type: DataTypes.STRING(255),
       allowNull: true,
-      field: 'usuario_ultima_edicion_id',
+      field: 'nombre_usuario_editor',
       defaultValue: null
+    },
+    fechaUltimaEdicion: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: 'fecha_ultima_edicion',
+      defaultValue: null
+    },
+    fecha_creacion: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'fecha_creacion'
     }
   }, {
     tableName: "medidas_de_proteccion",
-    timestamps: true,
-    createdAt: 'fecha_creacion',
-    updatedAt: 'fecha_actualizacion',
+    timestamps: false,
+    createdAt: false,
+    updatedAt: false,
     underscored: false,
     indexes: [
       {
         unique: true,
-        fields: ['numeroMedida', 'anoMedida'],
-        name: 'unique_numero_año'
+        fields: ['comisariaId', 'numeroMedida', 'anoMedida'],
+        name: 'unique_medida'
       }
     ]
   });

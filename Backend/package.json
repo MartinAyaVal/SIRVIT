@@ -5,7 +5,20 @@
     "db:sync": "node sync-database.js",
     "db:check": "node check-db.js",
     "db:create": "node scripts/create-database.js",
-    "start:all": "concurrently \"cd comisaria-service && npm start\" \"cd usuarios-service && npm start\" \"cd medidas-service && npm start\" \"cd gateway-service && npm start\""
+    
+    "gateway": "cd gateway-service && npm start",
+    "usuarios": "cd usuarios-service && npm start",
+    "medidas": "cd medidas-service && npm start",
+    "comisaria": "cd comisaria-service && npm start",
+    "roles": "cd roles-service && npm start",
+    "victimas": "cd victimas-service && npm start",
+    "victimarios": "cd victimarios-service && npm start",
+    
+    "mains": "concurrently \"npm:gateway\" \"npm:usuarios\" \"npm:medidas\"",
+    "start:all": "concurrently \"npm:gateway\" \"npm:usuarios\" \"npm:medidas\" \"npm:comisaria\" \"npm:roles\" \"npm:victimas\" \"npm:victimarios\"",
+    
+    "stop:windows": "taskkill /F /IM node.exe",
+    "stop:linux": "pkill -f node"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"

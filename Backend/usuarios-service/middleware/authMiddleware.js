@@ -1,9 +1,9 @@
-// Backend/usuarios-service/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const SECRET = process.env.JWT_SECRET || 'secreto_por_defecto_cambiar_en_produccion';
 
+// Middleware de autenticación JWT
 const autenticarToken = (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
@@ -28,8 +28,7 @@ const autenticarToken = (req, res, next) => {
                     message: mensaje
                 });
             }
-            
-            // El gateway ya validó, pero verificamos estructura básica
+
             req.usuario = {
                 id: usuarioDecodificado.id || 0,
                 rolId: usuarioDecodificado.rolId || 1

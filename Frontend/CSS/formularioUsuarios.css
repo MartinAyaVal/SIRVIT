@@ -84,39 +84,6 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
-.tablaInfoDocumentoVictima {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.tablaInfoDocumentoVictima td {
-    padding: 14px 20px;
-    font-size: 14px;
-    width: 25%;
-}
-
-.tablaInfoDocumentoVictima tr:nth-child(odd) {
-    background-color: #e3ffeb;
-}
-
-.tablaInfoDocumentoVictima input[type="text"],
-.tablaInfoDocumentoVictima select {
-    width: 100%;
-    padding: 6px 10px;
-    border: 1px solid #aaa;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
-    background-color: #ffffff;
-}
-
-.tablaInfoDocumentoVictima input:focus,
-.tablaInfoDocumentoVictima select:focus {
-    outline: none;
-    border-color: #00a13e;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-}
-
 .botonGuardar {
     display: flex;
     justify-content: center;
@@ -190,4 +157,400 @@ input[type=number]::-webkit-outer-spin-button {
 /* Para Firefox */
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+/* ===== DISEÑO RESPONSIVO COMPLETO ===== */
+
+/* Tablets grandes y laptops pequeñas */
+@media (max-width: 1200px) {
+    .formulario {
+        width: 40%;
+    }
+}
+
+/* Tablets medianas */
+@media (max-width: 992px) {
+    .formulario {
+        width: 50%;
+    }
+    
+    .tablaF td {
+        padding: 12px 15px;
+        font-size: 13px;
+    }
+}
+
+/* Tablets pequeñas y móviles grandes en landscape */
+@media (max-width: 768px) {
+    .fondoF {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        align-items: flex-start;
+        padding-top: 80px; /* Aumentado para dar espacio desde la barra superior */
+    }
+
+    .formulario {
+        width: 80%;
+        max-height: 80vh;
+        padding: 25px 20px 25px 20px; /* Superior: 25px, Inferior: 25px, Laterales: 20px */
+        margin: 0 auto;
+    }
+
+    .headerF {
+        margin-bottom: 20px; /* Aumentado */
+        padding-bottom: 10px;
+        margin-top: 5px;
+    }
+
+    .headerF h2 {
+        font-size: 20px;
+        margin: 5px 0 10px 0;
+    }
+
+    .botonCancelar {
+        width: 18px;
+        right: 5px;
+        top: 5px;
+        padding: 8px;
+    }
+
+    .seccionF {
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+
+    /* En tablets mantenemos la tabla pero con ajustes */
+    .tablaF {
+        width: 100%;
+    }
+    
+    .tablaF td {
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+    
+    .tablaF input[type="text"],
+    .tablaF input[type="number"],
+    .tablaF input[type="password"],
+    .tablaF input[type="email"],
+    .tablaF input[type="tel"],
+    .tablaF select {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    
+    /* Fila de contraseña en tablets */
+    .tablaF td div[style*="display: flex"] {
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .btn-generar-contraseña {
+        width: auto;
+        margin-top: 0;
+        height: 38px;
+        font-size: 13px;
+        padding: 6px 12px;
+        white-space: nowrap;
+    }
+    
+    .botonGuardar {
+        width: auto;
+        min-width: 200px;
+        padding: 10px 25px;
+        font-size: 16px;
+        margin: 20px auto 10px auto;
+    }
+}
+
+/* Móviles - Diseño vertical con data-label */
+@media (max-width: 576px) {
+    .fondoF {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        align-items: flex-start;
+        padding-top: 70px; /* Ajustado para móviles */
+    }
+
+    .formulario {
+        width: 92%;
+        max-height: 80vh;
+        padding: 25px 15px 25px 15px; /* Superior e inferior igualados a 25px */
+        margin: 0 auto;
+    }
+
+    .headerF {
+        margin-bottom: 20px;
+        padding-bottom: 5px;
+        margin-top: 5px;
+    }
+
+    .headerF h2 {
+        font-size: 18px;
+        margin: 5px 0 10px 0;
+        padding: 0 30px;
+    }
+
+    .botonCancelar {
+        width: 15px;
+        right: 5px;
+        top: 5px;
+        padding: 8px;
+    }
+
+    .seccionF {
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* Transformar tabla a vertical */
+    .tablaF,
+    .tablaF tbody,
+    .tablaF tr,
+    .tablaF td {
+        display: block;
+    }
+
+    .tablaF tr {
+        margin-bottom: 16px;
+        background: none !important;
+    }
+
+    /* Ocultar fila de títulos */
+    .tablaF tr:first-child {
+        display: none;
+    }
+
+    /* Cada campo en vertical */
+    .tablaF td {
+        width: 100% !important;
+        padding: 6px 0;
+        position: relative;
+        margin-bottom: 0;
+    }
+
+    /* Mostrar títulos usando data-label */
+    .tablaF td:before {
+        content: attr(data-label);
+        display: block;
+        font-weight: bold;
+        color: rgb(15, 129, 0);
+        font-size: 13px;
+        margin-bottom: 4px;
+        letter-spacing: -0.2px;
+    }
+
+    /* Inputs */
+    .tablaF input[type="text"],
+    .tablaF input[type="number"],
+    .tablaF input[type="password"],
+    .tablaF input[type="email"],
+    .tablaF input[type="tel"],
+    .tablaF select {
+        padding: 8px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        margin-bottom: 0;
+    }
+
+    /* Mensajes de error */
+    .mensaje {
+        font-size: 11px;
+        margin-top: 4px;
+        margin-bottom: 0;
+        line-height: 1.3;
+    }
+
+    /* Fila de contraseña */
+    .tablaF tr:last-child td {
+        padding-top: 6px;
+        border-top: none;
+    }
+
+    /* Contenedor de contraseña */
+    .tablaF td div[style*="display: flex"] {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .tablaF td div[style*="position: relative"] {
+        width: 100%;
+    }
+
+    /* Iconos de contraseña */
+    .ver {
+        width: 14px !important;
+        height: auto;
+    }
+
+    /* Botón generar contraseña */
+    .btn-generar-contraseña {
+        width: 100%;
+        margin-top: 4px;
+        height: 36px;
+        font-size: 13px;
+        padding: 6px;
+    }
+
+    /* Botón crear */
+    .botonGuardar {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        margin: 20px auto 10px auto; /* Superior aumentado a 20px */
+    }
+
+    .boton-container {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        padding: 0 5px;
+    }
+}
+
+/* Móviles pequeños */
+@media (max-width: 375px) {
+    .fondoF {
+        padding-top: 60px;
+    }
+
+    .formulario {
+        width: 94%;
+        padding: 20px 12px 20px 12px; /* Superior e inferior igualados a 20px */
+    }
+
+    .headerF {
+        margin-bottom: 15px;
+        margin-top: 3px;
+    }
+
+    .headerF h2 {
+        font-size: 16px;
+        padding: 0 25px;
+        margin: 3px 0 8px 0;
+    }
+
+    .botonCancelar {
+        top: 3px;
+        right: 3px;
+        padding: 6px;
+    }
+
+    .seccionF {
+        padding: 10px;
+        margin-bottom: 16px;
+    }
+
+    .tablaF tr {
+        margin-bottom: 14px;
+    }
+
+    .tablaF td {
+        padding: 5px 0;
+    }
+
+    .tablaF td:before {
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+
+    .tablaF input[type="text"],
+    .tablaF input[type="number"],
+    .tablaF input[type="password"],
+    .tablaF input[type="email"],
+    .tablaF input[type="tel"],
+    .tablaF select {
+        padding: 7px 8px;
+        font-size: 13px;
+    }
+
+    .ver {
+        width: 13px !important;
+    }
+
+    .btn-generar-contraseña {
+        height: 34px;
+        font-size: 12px;
+        padding: 5px;
+        margin-top: 3px;
+    }
+
+    .botonGuardar {
+        padding: 10px;
+        font-size: 14px;
+        margin: 15px auto 8px auto;
+    }
+
+    .mensaje {
+        font-size: 10px;
+        margin-top: 3px;
+    }
+}
+
+/* Landscape en móviles */
+@media (max-width: 768px) and (orientation: landscape) {
+    .fondoF {
+        padding-top: 60px; /* Ajustado para landscape */
+        align-items: flex-start;
+    }
+
+    .formulario {
+        width: 80%;
+        max-height: 85vh;
+        padding: 20px 15px 20px 15px;
+    }
+
+    .headerF {
+        margin-bottom: 15px;
+        margin-top: 0;
+    }
+
+    .tablaF td {
+        padding: 8px 10px;
+    }
+
+    /* En landscape mantenemos la estructura de tabla */
+    .tablaF,
+    .tablaF tbody,
+    .tablaF tr,
+    .tablaF td {
+        display: table-cell;
+    }
+    
+    .tablaF tr {
+        display: table-row;
+    }
+    
+    .tablaF td {
+        display: table-cell;
+        width: 33.33%;
+    }
+    
+    /* No ocultamos la primera fila en landscape */
+    .tablaF tr:first-child {
+        display: table-row;
+    }
+    
+    /* No mostramos data-label en landscape */
+    .tablaF td:before {
+        display: none;
+    }
+
+    .tablaF td div[style*="display: flex"] {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .btn-generar-contraseña {
+        width: auto;
+        margin-top: 0;
+        height: 34px;
+    }
+
+    .botonGuardar {
+        margin: 15px auto 10px auto;
+    }
 }

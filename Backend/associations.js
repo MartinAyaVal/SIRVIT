@@ -1,3 +1,4 @@
+// Backend/shared-models/associations.js
 function setupAssociations(models) {
   const {
     Comisaria,
@@ -9,8 +10,6 @@ function setupAssociations(models) {
     TipoVictima,
     TipoVictimario
   } = models;
-
-  console.log('🔗 Configurando asociaciones...');
 
   // ===== 1. USUARIO - ROL =====
   Usuario.belongsTo(Rol, {
@@ -63,15 +62,14 @@ function setupAssociations(models) {
     as: 'medidasEditadas'
   });
 
-  // ===== 6. VICTIMARIOS - MEDIDAS (¡CAMBIO IMPORTANTE!) =====
-  // Ahora los victimarios pertenecen a medidas (1:N en lugar de 1:1)
+  // ===== 6. VICTIMARIOS - MEDIDAS (1:N - CORREGIDO) =====
   Victimarios.belongsTo(Medidas, {
     foreignKey: 'medidaId',
     as: 'medida'
   });
   Medidas.hasMany(Victimarios, {
     foreignKey: 'medidaId',
-    as: 'victimarios'  // Cambiado de singular a plural
+    as: 'victimarios'
   });
 
   // ===== 7. VICTIMARIOS - TIPO VICTIMARIO =====
@@ -123,14 +121,6 @@ function setupAssociations(models) {
     foreignKey: 'comisariaId',
     as: 'victimas'
   });
-
-  console.log('✅ Asociaciones configuradas correctamente');
-  
-  // Verificar aliases únicos
-  console.log('🔍 Aliases configurados:');
-  console.log('   Medidas -> comisaria, usuario, usuarioUltimaEdicion, victimarios, victimas');
-  console.log('   Victimarios -> medida, tipoVictimario, comisaria');
-  console.log('   Victimas -> medida, tipoVictima, comisaria');
 }
 
 module.exports = setupAssociations;

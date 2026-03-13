@@ -6,9 +6,13 @@ const authRoutes = require('./routes/authRouthes.js');
 const limitesRoutes = require('./routes/limitesRoutes.js');
 require('dotenv').config();
 
+// Silenciar logs de Sequelize
+process.env.DEBUG = 'none';
+process.env.NODE_ENV = 'production';
+
 const app = express();
 
-// ===== MIDDLEWARE CRÍTICO =====
+// Configuración CORS
 const allowedOrigins = [
     'http://localhost:8080',
     'http://localhost:5500',
@@ -21,7 +25,6 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Permitir requests sin origin (Postman, curl, etc.)
         if (!origin) return callback(null, true);
         
         if (allowedOrigins.indexOf(origin) !== -1) {
@@ -36,15 +39,13 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id', 'x-user-documento', 'x-user-rol', 'x-user-nombre', 'x-user-comisaria']
 }));
 
-// MIDDLEWARE DE LOGS
+// Log de peticiones
 app.use((req, res, next) => {
     console.log(`📥 ${req.method} ${req.url}`);
-    console.log(`📥 Content-Type: ${req.headers['content-type']}`);
-    console.log(`📥 Origin: ${req.headers['origin']}`);
     next();
 });
 
-// Parsear JSON y URL-encoded
+// Parseo de JSON
 app.use(express.json({ 
     limit: '10mb',
     verify: (req, res, buf) => {
@@ -56,7 +57,7 @@ app.use(express.json({
                 }
             }
         } catch (e) {
-            console.error('❌ JSON inválido recibido:', buf ? buf.toString() : 'No buffer');
+            console.error('❌ JSON inválido recibido');
             res.status(400).json({ 
                 error: 'JSON inválido',
                 message: 'El cuerpo de la solicitud no es un JSON válido'
@@ -70,35 +71,22 @@ app.use(express.urlencoded({
     limit: '10mb' 
 }));
 
-// ===== RUTAS CORREGIDAS =====
+// Rutas
 app.use('/auth', authRoutes);
 app.use('/api/usuarios', usuariosRoutes);
-app.use('/api/limites', limitesRoutes); // ¡AGREGA ESTA LÍNEA!
+app.use('/api/limites', limitesRoutes);
 
-// ===== RUTAS DE PRUEBA Y HEALTH CHECK =====
+// Health check
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     service: 'usuarios-service',
     port: process.env.PORT || 3005,
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      auth: 'POST /auth/login',
-      usuarios: 'GET /api/usuarios',
-      crearUsuario: 'POST /api/usuarios',
-      obtenerUsuario: 'GET /api/usuarios/:id',
-      actualizarUsuario: 'PUT /api/usuarios/:id',
-      eliminarUsuario: 'DELETE /api/usuarios/:id',
-      cambiarEstado: 'PATCH /api/usuarios/:id/estado',
-      // ¡AGREGA LOS NUEVOS ENDPOINTS DE LÍMITES!
-      limites: 'GET /api/limites',
-      limiteEspecifico: 'GET /api/limites/:comisaria_rol',
-      actualizarLimite: 'PUT /api/limites/:comisaria_rol'
-    }
+    timestamp: new Date().toISOString()
   });
 });
 
-// Ruta adicional de debug para verificar estructura
+// Debug de rutas (solo para desarrollo)
 app.get('/debug-routes', (req, res) => {
   const routes = [];
   
@@ -120,24 +108,11 @@ app.get('/debug-routes', (req, res) => {
   
   res.json({
     success: true,
-    message: 'Rutas disponibles en el servicio de usuarios',
-    totalRoutes: routes.length,
-    routes: routes.sort((a, b) => a.path.localeCompare(b.path)),
-    gatewayAccess: {
-      listarUsuarios: 'GET http://localhost:8080/usuarios',
-      crearUsuario: 'POST http://localhost:8080/usuarios',
-      obtenerUsuario: 'GET http://localhost:8080/usuarios/:id',
-      actualizarUsuario: 'PUT http://localhost:8080/usuarios/:id',
-      eliminarUsuario: 'DELETE http://localhost:8080/usuarios/:id',
-      cambiarEstado: 'PATCH http://localhost:8080/usuarios/:id/estado',
-      // ¡AGREGA LAS RUTAS DE LÍMITES PARA EL GATEWAY!
-      obtenerLimites: 'GET http://localhost:8080/usuarios/admin/limites',
-      actualizarLimite: 'PUT http://localhost:8080/usuarios/admin/limites/:comisaria_rol'
-    }
+    routes: routes.sort((a, b) => a.path.localeCompare(b.path))
   });
 });
 
-// ===== MANEJO DE ERRORES =====
+// Manejo de errores
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     console.error('❌ Error de JSON:', err.message);
@@ -154,53 +129,26 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ===== INICIAR SERVIDOR =====
+// Iniciar servidor
 sequelize.authenticate()
   .then(() => {
-    console.log('✅ Conectado a la base de datos MySQL');
+    console.log('✅ Conectado a MySQL');
     
     return sequelize.sync({ alter: true });
   })
   .then(() => {
-    console.log('🗄  Modelos sincronizados con la base de datos');
+    console.log('🗄  Modelos sincronizados');
     
     const PORT = process.env.PORT || 3005;
     app.listen(PORT, '0.0.0.0', () => {
-      console.log("\n" + "=".repeat(60));
-      console.log(`🚀 Servicio de usuarios corriendo en: http://localhost:${PORT}`);
-      console.log("=".repeat(60));
-      console.log("📋 Endpoints INTERNOS (directo al servicio):");
-      console.log(`  🔐 Login:           POST http://localhost:${PORT}/auth/login`);
-      console.log(`  👥 Listar usuarios: GET  http://localhost:${PORT}/api/usuarios`);
-      console.log(`  ➕ Crear usuario:   POST http://localhost:${PORT}/api/usuarios`);
-      console.log(`  👤 Obtener usuario: GET  http://localhost:${PORT}/api/usuarios/:id`);
-      console.log(`  ✏️  Actualizar:      PUT  http://localhost:${PORT}/api/usuarios/:id`);
-      console.log(`  🗑️  Eliminar:        DEL  http://localhost:${PORT}/api/usuarios/:id`);
-      console.log(`  🔄 Cambiar estado:  PATCH http://localhost:${PORT}/api/usuarios/:id/estado`);
-      // ¡AGREGA LOS NUEVOS ENDPOINTS!
-      console.log(`  📊 Obtener límites: GET  http://localhost:${PORT}/api/limites`);
-      console.log(`  ⚙️  Actualizar límite: PUT  http://localhost:${PORT}/api/limites/:comisaria_rol`);
-      console.log(`  ❤️  Health check:    GET  http://localhost:${PORT}/health`);
-      console.log(`  🐛 Debug rutas:     GET  http://localhost:${PORT}/debug-routes`);
-      console.log("=".repeat(60));
-      console.log("📋 Endpoints EXTERNOS (a través del gateway):");
-      console.log(`  🔐 Login:           POST http://localhost:8080/usuarios/auth/login`);
-      console.log(`  👥 Listar usuarios: GET  http://localhost:8080/usuarios`);
-      console.log(`  ➕ Crear usuario:   POST http://localhost:8080/usuarios`);
-      console.log(`  👤 Obtener usuario: GET  http://localhost:8080/usuarios/:id`);
-      console.log(`  ✏️  Actualizar:      PUT  http://localhost:8080/usuarios/:id`);
-      console.log(`  🗑️  Eliminar:        DEL  http://localhost:8080/usuarios/:id`);
-      console.log(`  🔄 Cambiar estado:  PATCH http://localhost:8080/usuarios/:id/estado`);
-      // ¡AGREGA LOS NUEVOS ENDPOINTS DEL GATEWAY!
-      console.log(`  📊 Obtener límites: GET  http://localhost:8080/usuarios/admin/limites`);
-      console.log(`  ⚙️  Actualizar límite: PUT  http://localhost:8080/usuarios/admin/limites/:comisaria_rol`);
-      console.log(`  ❤️  Health check:    GET  http://localhost:8080/usuarios/health`);
-      console.log("=".repeat(60));
-      console.log("💡 Nota: Los límites de usuarios están ahora en ESTE servicio");
-      console.log("=".repeat(60) + "\n");
+      console.log('\n========================================');
+      console.log(`✅ USUARIOS SERVICE INICIADO`);
+      console.log('========================================');
+      console.log(`🌐 Servicio funcionando correctamente`);
+      console.log('========================================\n');
     });
   })
   .catch(err => {
-    console.error('❌ Error al conectar con la base de datos:', err.message);
+    console.error('❌ Error de base de datos:', err.message);
     process.exit(1);
   });

@@ -2,7 +2,7 @@ const sequelize = require('../db/config.js');
 const Usuario = require('../models/usuarios.js')(sequelize);
 const bcrypt = require('bcryptjs');
 
-// Obtener todos los usuarios registrados
+// Obtener todos los usuarios
 exports.getusuario = async (req, res) => {
     try {
         const usuarios = await Usuario.findAll({
@@ -15,10 +15,7 @@ exports.getusuario = async (req, res) => {
             data: usuarios,
             count: usuarios.length
         });
-        
-        console.log(`✅ Usuarios enviados: ${usuarios.length}`);
     } catch (error) {
-        console.error('❌ Error al obtener usuarios:', error);
         res.status(500).json({ 
             success: false,
             message: "Error al obtener usuarios", 
@@ -27,28 +24,20 @@ exports.getusuario = async (req, res) => {
     }
 };
 
-// Crear usuario - CON ASIGNACIÓN CORRECTA DE ROL_ID Y COMISARIA_ID
+// Crear nuevo usuario
 exports.createusuario = async (req, res) => {
   try {
-    console.log("=".repeat(60));
-    console.log("🆕 CREANDO USUARIO - ASIGNACIÓN DE ROLES CORRECTA");
-    console.log("=".repeat(60));
-    
-    console.log("📥 REQ.BODY COMPLETO:", req.body);
-    
     const { 
       nombre, 
       documento, 
       cargo,
       correo, 
       telefono, 
-      // Obtener contraseña de cualquier campo posible
       contrasena,
       contraseña,
       comisaria_rol
     } = req.body;
 
-    // Validar campos requeridos
     if (!nombre || !documento || !cargo || !correo || !telefono || !comisaria_rol) {
       return res.status(400).json({ 
         success: false,
@@ -56,10 +45,7 @@ exports.createusuario = async (req, res) => {
       });
     }
 
-    // Obtener la contraseña (aceptar ambos nombres)
     const passwordRaw = contrasena || contraseña;
-    
-    console.log("🔐 Contraseña recibida:", passwordRaw ? `"${passwordRaw}" (${passwordRaw.length} chars)` : "NO RECIBIDA");
     
     if (!passwordRaw) {
       return res.status(400).json({ 
@@ -68,12 +54,8 @@ exports.createusuario = async (req, res) => {
       });
     }
 
-    // ===== ASIGNACIÓN CORRECTA DE ROL_ID Y COMISARIA_ID =====
-    console.log("🎯 Asignando rol_id y comisaria_id según comisaria_rol:", comisaria_rol);
-    
-    // Mapeo de comisaria_rol a rol_id y comisaria_id
     const mapeoRoles = {
-      'Administrador': { rolId: 1, comisariaId: 0 },  // Cambiar null a 0
+      'Administrador': { rolId: 1, comisariaId: 0 },
       'Comisaría Primera': { rolId: 2, comisariaId: 1 },
       'Comisaría Segunda': { rolId: 2, comisariaId: 2 },
       'Comisaría Tercera': { rolId: 2, comisariaId: 3 },
@@ -85,7 +67,6 @@ exports.createusuario = async (req, res) => {
     const configRol = mapeoRoles[comisaria_rol];
     
     if (!configRol) {
-      console.log(`❌ comisaria_rol no reconocido: "${comisaria_rol}"`);
       return res.status(400).json({ 
         success: false,
         message: `Comisaría/rol no válido: ${comisaria_rol}` 
@@ -94,39 +75,27 @@ exports.createusuario = async (req, res) => {
     
     const rolIdFinal = configRol.rolId;
     const comisariaIdFinal = configRol.comisariaId;
-    
-    console.log(`✅ Configuración asignada: rolId=${rolIdFinal}, comisariaId=${comisariaIdFinal} para "${comisaria_rol}"`);
 
-    // ⭐⭐ HASH DE CONTRASEÑA - UNA SOLA VEZ ⭐⭐
-    console.log("🔐 Generando hash de contraseña...");
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(passwordRaw, saltRounds);
-    console.log(`✅ Hash generado: ${hashedPassword.substring(0, 30)}...`);
 
-    // IMPORTANTE: Guardar documento como STRING
     const documentoString = documento.toString();
-    console.log(`📝 Documento a guardar: ${documentoString}`);
 
-    // Crear usuario con valores CORRECTOS
     const usuario = await Usuario.create({
       nombre: nombre,
       documento: documentoString,
       cargo: cargo,
       correo: correo,
       telefono: telefono,
-      contraseña: hashedPassword,  // Hash ya generado
+      contraseña: hashedPassword,
       comisaria_rol: comisaria_rol,
-      rolId: rolIdFinal,  // ← VALOR CORRECTO según comisaria_rol
-      comisariaId: comisariaIdFinal,  // ← VALOR CORRECTO según comisaria_rol
-      estado: 'activo'  // Asegurar que tenga estado
+      rolId: rolIdFinal,
+      comisariaId: comisariaIdFinal,
+      estado: 'activo'
     });
 
     const usuarioResponse = usuario.toJSON();
     delete usuarioResponse.contraseña;
-
-    console.log(`✅ Usuario creado exitosamente: ${usuario.nombre}`);
-    console.log(`📊 Datos guardados: rolId=${usuario.rolId}, comisariaId=${usuario.comisariaId}`);
-    console.log("=".repeat(60));
 
     res.status(201).json({
       success: true,
@@ -135,8 +104,6 @@ exports.createusuario = async (req, res) => {
     });
     
   } catch(error) {
-    console.log('❌ Error al crear usuario:', error.message);
-    console.log('❌ Errores de validación:', error.errors);
     res.status(500).json({ 
       success: false,
       message: 'Error al crear usuario',
@@ -149,7 +116,7 @@ exports.createusuario = async (req, res) => {
   }
 };
 
-// Obtener usuario por Id
+// Obtener usuario por ID
 exports.getusuariosById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -175,16 +142,10 @@ exports.getusuariosById = async (req, res) => {
     }
 }
 
-// Actualizar usuario por Id - ACEPTA ACTUALIZACIONES PARCIALES
+// Actualizar usuario por ID
 exports.updateusuario = async (req, res) => {
     try {
         const { id } = req.params;
-        
-        console.log("\n" + "=".repeat(60));
-        console.log(`🛠️  ACTUALIZANDO USUARIO ID: ${id}`);
-        console.log("=".repeat(60));
-        
-        console.log("📥 REQ.BODY (parcial):", req.body);
         
         const usuario = await Usuario.findByPk(id);
         if(!usuario) {
@@ -194,15 +155,10 @@ exports.updateusuario = async (req, res) => {
             });
         }
 
-        // Obtener contraseña de cualquier campo
         const password = req.body.contrasena || req.body.contraseña;
 
-        // ===== ACEPTAR ACTUALIZACIONES PARCIALES =====
-        // Solo actualizar campos que vienen en el request
-        
         const updateData = {};
         
-        // Campos que pueden actualizarse
         if (req.body.nombre !== undefined) updateData.nombre = req.body.nombre.trim();
         if (req.body.documento !== undefined) updateData.documento = req.body.documento.toString();
         if (req.body.cargo !== undefined) updateData.cargo = req.body.cargo.trim();
@@ -211,7 +167,6 @@ exports.updateusuario = async (req, res) => {
         if (req.body.comisaria_rol !== undefined) {
             updateData.comisaria_rol = req.body.comisaria_rol.trim();
             
-            // Asignar rol_id y comisaria_id según comisaria_rol
             const mapeoRoles = {
                 'Administrador': { rolId: 1, comisariaId: null },
                 'Comisaría Primera': { rolId: 2, comisariaId: 1 },
@@ -229,27 +184,19 @@ exports.updateusuario = async (req, res) => {
             }
         }
 
-        // Si hay nueva contraseña, hashearla
         if (password && password.trim() !== '') {
-            console.log("🔐 Actualizando contraseña...");
             const saltRounds = 10;
             updateData.contraseña = await bcrypt.hash(password.trim(), saltRounds);
         }
 
-        // Verificar que haya algo que actualizar
         if (Object.keys(updateData).length === 0) {
             return res.status(400).json({
                 success: false,
                 message: 'No se proporcionaron datos para actualizar'
             });
         }
-
-        console.log("🔄 Campos a actualizar:", updateData);
         
         await usuario.update(updateData);
-        
-        console.log(`✅ Usuario actualizado correctamente`);
-        console.log("=".repeat(60));
 
         const usuarioResponse = usuario.toJSON();
         delete usuarioResponse.contraseña;
@@ -261,9 +208,6 @@ exports.updateusuario = async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ ERROR en updateusuario:', error.message);
-        
-        // Mejor mensaje de error
         let mensajeError = 'Error al actualizar usuario';
         if (error.name === 'SequelizeValidationError') {
             mensajeError = 'Error de validación: ' + error.errors.map(err => err.message).join(', ');
@@ -278,15 +222,14 @@ exports.updateusuario = async (req, res) => {
         });
     }
 };
-// Eliminar usuario por Id
+
+// Eliminar usuario por ID
 exports.deleteusuario = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`🗑️ Eliminando usuario ID: ${id}`);
         
         const usuario = await Usuario.findByPk(id);
         if(!usuario) {
-            console.log(`❌ Usuario ID ${id} no encontrado`);
             return res.status(404).json({ 
                 success: false,
                 message: 'Usuario no encontrado'
@@ -295,15 +238,12 @@ exports.deleteusuario = async (req, res) => {
 
         await usuario.destroy();
         
-        console.log(`✅ Usuario ID ${id} eliminado correctamente`);
-        
         res.json({ 
             success: true,
             message: 'Usuario eliminado correctamente',
             deletedId: id
         });
     } catch (error) {
-        console.error('❌ Error al eliminar usuario:', error);
         res.status(500).json({ 
             success: false,
             message: 'Error al eliminar usuario', 
@@ -317,8 +257,6 @@ exports.cambiarEstadoUsuario = async (req, res) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
-        
-        console.log(`🔄 Cambiando estado usuario ID: ${id} a: ${estado}`);
         
         if (!estado) {
             return res.status(400).json({ 
@@ -336,7 +274,6 @@ exports.cambiarEstadoUsuario = async (req, res) => {
         
         const usuario = await Usuario.findByPk(id);
         if (!usuario) {
-            console.log(`❌ Usuario ID ${id} no encontrado`);
             return res.status(404).json({ 
                 success: false,
                 message: 'Usuario no encontrado' 
@@ -348,15 +285,12 @@ exports.cambiarEstadoUsuario = async (req, res) => {
         const usuarioResponse = usuario.toJSON();
         delete usuarioResponse.contraseña;
         
-        console.log(`✅ Usuario ID ${id} actualizado a estado: ${estado}`);
-        
         res.json({
             success: true,
             message: "Estado actualizado correctamente",
             data: usuarioResponse
         });
     } catch (error) {
-        console.error('❌ Error al cambiar estado:', error);
         res.status(500).json({ 
             success: false,
             message: 'Error al cambiar estado del usuario', 

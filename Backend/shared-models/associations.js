@@ -11,8 +11,6 @@ function setupAssociations(models) {
     TipoVictimario
   } = models;
 
-  console.log('🔗 Configurando asociaciones...');
-
   // ===== RELACIONES EXISTENTES =====
 
   // 1. USUARIO - ROL (N:1)
@@ -44,29 +42,6 @@ function setupAssociations(models) {
     foreignKey: 'comisariaId',
     as: 'medidas'
   });
-
-  // 4. MEDIDAS - USUARIO (CREADOR) (N:1)
-  Medidas.belongsTo(Usuario, {
-    foreignKey: 'usuarioId',
-    as: 'usuario'
-  });
-  Usuario.hasMany(Medidas, {
-    foreignKey: 'usuarioId',
-    as: 'medidasRegistradas'
-  });
-
-  // 5. MEDIDAS - USUARIO (ÚLTIMA EDICIÓN) (N:1)
-  Medidas.belongsTo(Usuario, {
-    foreignKey: 'usuarioUltimaEdicionId',
-    as: 'usuarioUltimaEdicion',
-    allowNull: true
-  });
-  Usuario.hasMany(Medidas, {
-    foreignKey: 'usuarioUltimaEdicionId',
-    as: 'medidasEditadas'
-  });
-
-  // ===== NUEVAS RELACIONES MUCHOS-A-MUCHOS =====
 
   // 6. MEDIDAS - VICTIMARIOS (N:M) - TABLA INTERMEDIA
   Medidas.belongsToMany(Victimarios, {
@@ -145,12 +120,6 @@ function setupAssociations(models) {
     foreignKey: 'comisariaId',
     as: 'victimarios'
   });
-
-  console.log('✅ Asociaciones configuradas correctamente');
-  
-  console.log('🔍 Nuevas relaciones N:M:');
-  console.log('   • Medidas ↔ Victimarios (N:M) -> Tabla: MedidaVictimarios');
-  console.log('   • Medidas ↔ Victimas (N:M) -> Tabla: MedidaVictimas');
 }
 
 module.exports = setupAssociations;

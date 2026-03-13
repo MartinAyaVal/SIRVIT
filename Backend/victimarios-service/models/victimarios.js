@@ -1,110 +1,162 @@
-// Backend/medidas-service/models/medidas.js
+// Backend/victimarios-service/models/victimarios.js
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize) => {
-  const Medidas = sequelize.define("Medidas", {
+  const Victimarios = sequelize.define("Victimarios", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
+    medidaId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'medida_id',
+      references: {
+        model: 'medidas_de_proteccion',
+        key: 'id'
+      }
+    },
     comisariaId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'comisaria_id'  
+      field: 'comisaria_id',
+      references: {
+        model: 'comisarias',
+        key: 'id'
+      }
     },
-    numeroMedida: {
+    tipoVictimarioId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'numeroMedida'  
+      field: 'tipo_victimario_id',
+      references: {
+        model: 'tipo_victimario',
+        key: 'id'
+      }
     },
-    anoMedida: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'anoMedida'  
-    },
-    estado: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      defaultValue: 'ACTIVA',
-      field: 'estado'
-    },
-    numeroIncidencia: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-      field: 'numero_incidencia'
-    },
-    trasladadoDesde: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      field: 'trasladado_desde'
-    },
-    solicitadoPor: {
+    nombreCompleto: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      field: 'solicitado_por'
+      field: 'nombreCompleto'
     },
-    otroSolicitante: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      field: 'otro_solicitante'
-    },
-    lugarHechos: {
-      type: DataTypes.STRING(200),
-      allowNull: false,
-      field: 'lugarHechos'  
-    },
-    tipoViolencia: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-      field: 'tipoViolencia'  
-    },
-    fechaUltimosHechos: {
+    fechaNacimiento: {
       type: DataTypes.DATEONLY,
       allowNull: false,
-      field: 'fechaUltimosHechos'  
+      field: 'fechaNacimiento'
     },
-    horaUltimosHechos: {
-      type: DataTypes.TIME,
-      allowNull: false,
-      field: 'horaUltimosHechos'  
-    },
-    numeroVictimas: {
+    edad: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: 0,
-      field: 'numero_victimas'
+      field: 'edad'
     },
-    numeroVictimarios: {
-      type: DataTypes.INTEGER,
+    tipoDocumento: {
+      type: DataTypes.STRING(20),
       allowNull: false,
-      defaultValue: 0,
-      field: 'numero_victimarios'
+      field: 'tipoDocumento'
     },
-    usuarioId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      field: 'usuario_id'  
+    otroTipoDocumento: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'otroTipoDocumento'
     },
-    usuarioUltimaEdicionId: {
-      type: DataTypes.INTEGER,
+    numeroDocumento: {
+      type: DataTypes.STRING(20),
       allowNull: false,
-      field: 'usuario_ultima_edicion_id'
+      // ⚠️ IMPORTANTE: ELIMINAR COMPLETAMENTE CUALQUIER REFERENCIA A 'unique'
+      // El modelo NO debe tener unique: true
+      field: 'numeroDocumento'
+    },
+    documentoExpedido: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'documentoExpedido'
+    },
+    sexo: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+      field: 'sexo'
+    },
+    lgtbi: {
+      type: DataTypes.STRING(2),
+      allowNull: false,
+      defaultValue: 'NO',
+      field: 'lgtbi'
+    },
+    cualLgtbi: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'cualLgtbi'
+    },
+    etnia: {
+      type: DataTypes.STRING(2),
+      allowNull: false,
+      defaultValue: 'NO',
+      field: 'etnia'
+    },
+    cualEtnia: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'cual_etnia'
+    },
+    otroGeneroIdentificacion: {
+      type: DataTypes.STRING(45),
+      allowNull: true,
+      field: 'otro_genero_identificacion'
+    },
+    telefono: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'telefono'
+    },
+    telefonoAlternativo: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'telefono_alternativo'
+    },
+    correo: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'correo'
+    },
+    estratoSocioeconomico: {
+      type: DataTypes.INTEGER(1),
+      allowNull: true,
+      field: 'estrato_socioeconomico'
+    },
+    estadoCivil: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      field: 'estadoCivil'
+    },
+    direccion: {
+      type: DataTypes.STRING(200),
+      allowNull: true,
+      field: 'direccion'
+    },
+    barrio: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'barrio'
+    },
+    ocupacion: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'ocupacion'
+    },
+    estudios: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      field: 'estudios'
     }
   }, {
-    tableName: "medidas_de_proteccion",
+    tableName: "victimarios",
     timestamps: true,
-    createdAt: 'fecha_creacion',
-    updatedAt: 'fecha_actualizacion',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
     underscored: false,
-    indexes: [
-      {
-        unique: true,
-        fields: ['numeroMedida', 'anoMedida'],
-        name: 'unique_numero_año'
-      }
-    ]
+    indexes: []
   });
 
-  return Medidas;
+  return Victimarios;
 };

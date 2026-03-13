@@ -1,6 +1,175 @@
-// Backend/victimarios-service/controllers/victimariosController.js
 const { models } = require('../../shared-models');
 const { Victimarios, TipoVictimario, Medidas } = models;
+
+// ===== CREAR VICTIMARIO (VERSIÓN 1:N) =====
+exports.createVictimario = async (req, res) => {
+  try {
+    console.log('📥 Datos recibidos para crear victimario:', req.body);
+    
+    const {
+      medidaId, // ← IMPORTANTE: Ahora recibimos medidaId directamente
+      nombreCompleto,
+      fechaNacimiento,
+      edad,
+      tipoDocumento,
+      otroTipoDocumento,
+      numeroDocumento,
+      documentoExpedido,
+      sexo,
+      lgtbi,
+      cualLgtbi,
+      etnia,
+      cualEtnia,
+      otroGeneroIdentificacion,
+      telefono,
+      telefonoAlternativo,
+      correo,
+      estratoSocioeconomico,
+      estadoCivil,
+      direccion,
+      barrio,
+      ocupacion,
+      estudios,
+      comisariaId,
+      tipoVictimarioId
+    } = req.body;
+
+    // Validar campos requeridos
+    const camposRequeridos = [
+      'medidaId', // ← AHORA ES REQUERIDO
+      'nombreCompleto', 'fechaNacimiento', 'edad', 'tipoDocumento', 
+      'numeroDocumento', 'sexo', 'lgtbi', 'etnia', 'comisariaId', 'tipoVictimarioId'
+    ];
+    
+    for (const campo of camposRequeridos) {
+      if (!req.body[campo] && req.body[campo] !== '') {
+        return res.status(400).json({
+          success: false,
+          message: `El campo '${campo}' es requerido`
+        });
+      }
+    }
+
+    // Validar que la medida existe
+    const medida = await Medidas.findByPk(parseInt(medidaId));
+    if (!medida) {
+      return res.status(404).json({
+        success: false,
+        message: `La medida con ID ${medidaId} no existe`
+      });
+    }
+
+    // Validación de correo electrónico si se proporciona
+    if (correo && correo.trim() !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(correo)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El formato del correo electrónico no es válido'
+        });
+      }
+    }
+
+    // Validación adicional para estrato socioeconómico
+    if (estratoSocioeconomico !== undefined && estratoSocioeconomico !== null && estratoSocioeconomico !== '') {
+      const estrato = parseInt(estratoSocioeconomico);
+      if (isNaN(estrato) || estrato < 1 || estrato > 6) {
+        return res.status(400).json({
+          success: false,
+          message: 'El estrato socioeconómico debe ser un número entre 1 y 6'
+        });
+      }
+    }
+
+    // Crear victimario ASOCIADO DIRECTAMENTE A LA MEDIDA
+    const victimario = await Victimarios.create({
+      medidaId: parseInt(medidaId), // ← RELACIÓN 1:N
+      nombreCompleto,
+      fechaNacimiento,
+      edad: parseInt(edad) || 0,
+      tipoDocumento,
+      otroTipoDocumento: otroTipoDocumento || null,
+      numeroDocumento: numeroDocumento.toString(),
+      documentoExpedido: documentoExpedido || null,
+      sexo,
+      lgtbi: lgtbi || 'NO',
+      cualLgtbi: cualLgtbi || null,
+      etnia: etnia || 'NO',
+      cualEtnia: cualEtnia || null,
+      otroGeneroIdentificacion: otroGeneroIdentificacion || null,
+      telefono: telefono || null,
+      telefonoAlternativo: telefonoAlternativo || null,
+      correo: correo ? correo.trim() : null,
+      estratoSocioeconomico: (estratoSocioeconomico && estratoSocioeconomico !== '') ? parseInt(estratoSocioeconomico) : null,
+      estadoCivil: estadoCivil || null,
+      direccion: direccion || null,
+      barrio: barrio || null,
+      ocupacion: ocupacion || null,
+      estudios: estudios || null,
+      comisariaId: comisariaId ? parseInt(comisariaId) : null,
+      tipoVictimarioId: tipoVictimarioId ? parseInt(tipoVictimarioId) : null
+    });
+    
+    console.log(`✅ Victimario creado exitosamente - ID: ${victimario.id}, Medida ID: ${victimario.medidaId}`);
+    
+    // Actualizar contador en medidas-service (llamada HTTP)
+    try {
+      const axios = require('axios');
+      await axios.patch(`http://localhost:3002/api/medidas/${medidaId}/contadores`, {
+        numeroVictimarios: (medida.numeroVictimarios || 0) + 1
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-ID': req.headers['x-user-id'] || req.headers['X-User-ID']
+        }
+      });
+      console.log(`✅ Contador de victimarios actualizado para medida ${medidaId}`);
+    } catch (error) {
+      console.error(`⚠️ No se pudo actualizar contador de victimarios:`, error.message);
+      // No fallamos la creación si no se puede actualizar el contador
+    }
+    
+    // Obtener victimario con relaciones
+    const victimarioCompleto = await Victimarios.findByPk(victimario.id, {
+      include: [
+        {
+          model: TipoVictimario,
+          as: 'tipoVictimario'
+        },
+        {
+          model: Medidas,
+          as: 'medida', // ← AHORA ES BELONGS_TO, no belongsToMany
+          attributes: ['id', 'numeroMedida', 'anoMedida']
+        }
+      ]
+    });
+    
+    res.status(201).json({
+      success: true,
+      message: 'Victimario creado exitosamente',
+      data: victimarioCompleto
+    });
+    
+  } catch (error) {
+    console.error('❌ Error al crear victimario:', error);
+    
+    // Error de duplicado de documento
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Ya existe un victimario con este número de documento',
+        error: error.errors?.[0]?.message || error.message
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al crear victimario', 
+      error: error.message,
+      details: error.errors ? error.errors.map(e => e.message) : []
+    });
+  }
+};
 
 // Obtener todos los victimarios registrados
 exports.getVictimarios = async (req, res) => {
@@ -33,149 +202,6 @@ exports.getVictimarios = async (req, res) => {
       success: false,
       message: 'Error al obtener victimarios', 
       error: error.message 
-    });
-  }
-};
-
-// Crear victimario - versión actualizada para relaciones N:M
-exports.createVictimario = async (req, res) => {
-  try {
-    console.log('📥 Datos recibidos para crear victimario:', req.body);
-    
-    const {
-      nombreCompleto,
-      fechaNacimiento,
-      edad,
-      tipoDocumento,
-      otroTipoDocumento,
-      numeroDocumento,
-      documentoExpedido,
-      sexo,
-      lgtbi,
-      cualLgtbi,
-      etnia,
-      cualEtnia,
-      otroGeneroIdentificacion,
-      telefono,
-      telefonoAlternativo,
-      correo,
-      estratoSocioeconomico,
-      estadoCivil,
-      direccion,
-      barrio,
-      ocupacion,
-      estudios,
-      medidaIds, // Array de IDs de medidas (N:M)
-      comisariaId,
-      tipoVictimarioId
-    } = req.body;
-
-    const camposRequeridos = [
-      'nombreCompleto', 'fechaNacimiento', 'edad', 'tipoDocumento', 
-      'numeroDocumento', 'sexo', 'lgtbi', 'etnia', 'comisariaId', 'tipoVictimarioId'
-    ];
-    
-    for (const campo of camposRequeridos) {
-      if (!req.body[campo] && req.body[campo] !== '') {
-        return res.status(400).json({
-          success: false,
-          message: `El campo '${campo}' es requerido`
-        });
-      }
-    }
-
-    // Validación de correo electrónico si se proporciona
-    if (correo && correo.trim() !== '') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(correo)) {
-        return res.status(400).json({
-          success: false,
-          message: 'El formato del correo electrónico no es válido'
-        });
-      }
-    }
-
-    // Validación adicional para estrato socioeconómico
-    if (estratoSocioeconomico !== undefined && estratoSocioeconomico !== null && estratoSocioeconomico !== '') {
-      const estrato = parseInt(estratoSocioeconomico);
-      if (isNaN(estrato) || estrato < 1 || estrato > 6) {
-        return res.status(400).json({
-          success: false,
-          message: 'El estrato socioeconómico debe ser un número entre 1 y 6'
-        });
-      }
-    }
-
-    // Crear victimario
-    const victimario = await Victimarios.create({
-      nombreCompleto,
-      fechaNacimiento,
-      edad: parseInt(edad) || 0,
-      tipoDocumento,
-      otroTipoDocumento: otroTipoDocumento || null,
-      numeroDocumento: numeroDocumento.toString(),
-      documentoExpedido: documentoExpedido || null,
-      sexo,
-      lgtbi: lgtbi || 'NO',
-      cualLgtbi: cualLgtbi || null,
-      etnia: etnia || 'NO',
-      cualEtnia: cualEtnia || null,
-      otroGeneroIdentificacion: otroGeneroIdentificacion || null,
-      telefono: telefono || null,
-      telefonoAlternativo: telefonoAlternativo || null,
-      correo: correo ? correo.trim() : null,
-      estratoSocioeconomico: (estratoSocioeconomico && estratoSocioeconomico !== '') ? parseInt(estratoSocioeconomico) : null,
-      estadoCivil: estadoCivil || null,
-      direccion: direccion || null,
-      barrio: barrio || null,
-      ocupacion: ocupacion || null,
-      estudios: estudios || null,
-      comisariaId: comisariaId ? parseInt(comisariaId) : null,
-      tipoVictimarioId: tipoVictimarioId ? parseInt(tipoVictimarioId) : null
-    });
-    
-    // Asociar con medidas si se proporcionaron IDs (relación N:M)
-    if (medidaIds && Array.isArray(medidaIds) && medidaIds.length > 0) {
-      const medidas = await Medidas.findAll({
-        where: { id: medidaIds }
-      });
-      
-      if (medidas.length > 0) {
-        await victimario.addMedidas(medidas);
-      }
-    }
-    
-    console.log('✅ Victimario creado exitosamente:', victimario.id);
-    
-    // Obtener victimario con relaciones
-    const victimarioCompleto = await Victimarios.findByPk(victimario.id, {
-      include: [
-        {
-          model: TipoVictimario,
-          as: 'tipoVictimario'
-        },
-        {
-          model: Medidas,
-          as: 'medidas',
-          attributes: ['id', 'numeroMedida', 'anoMedida'],
-          through: { attributes: [] }
-        }
-      ]
-    });
-    
-    res.status(201).json({
-      success: true,
-      message: 'Victimario creado exitosamente',
-      data: victimarioCompleto
-    });
-    
-  } catch (error) {
-    console.error('❌ Error al crear victimario:', error);
-    res.status(500).json({ 
-      success: false,
-      message: 'Error al crear victimario', 
-      error: error.message,
-      details: error.errors ? error.errors.map(e => e.message) : []
     });
   }
 };
@@ -498,10 +524,12 @@ exports.getVictimariosByComisaria = async (req, res) => {
   }
 };
 
-// Obtener victimarios por medida
+// ===== OBTENER VICTIMARIOS POR MEDIDA (1:N) =====
 exports.getVictimariosByMedida = async (req, res) => {
   try {
     const { medidaId } = req.params;
+    
+    console.log(`🔍 [VICTIMARIOS-SERVICE] Buscando victimarios para medida ID: ${medidaId}`);
     
     // Verificar que la medida existe
     const medida = await Medidas.findByPk(medidaId);
@@ -512,22 +540,25 @@ exports.getVictimariosByMedida = async (req, res) => {
       });
     }
     
-    // Obtener victimarios asociados a la medida
+    // Obtener victimarios asociados a la medida (1:N)
     const victimarios = await Victimarios.findAll({
+      where: { medidaId: parseInt(medidaId) }, // ← FILTRO DIRECTO
       include: [
         {
-          model: Medidas,
-          as: 'medidas',
-          where: { id: medidaId },
-          attributes: [],
-          through: { attributes: [] }
+          model: TipoVictimario,
+          as: 'tipoVictimario',
+          attributes: ['id', 'tipo']
         },
         {
-          model: TipoVictimario,
-          as: 'tipoVictimario'
+          model: Medidas,
+          as: 'medida',
+          attributes: ['id', 'numeroMedida', 'anoMedida']
         }
-      ]
+      ],
+      order: [['createdAt', 'DESC']]
     });
+    
+    console.log(`✅ ${victimarios.length} victimarios encontrados para medida ${medidaId}`);
     
     res.json({
       success: true,
@@ -536,7 +567,7 @@ exports.getVictimariosByMedida = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Error en getVictimariosByMedida:', error);
+    console.error('❌ Error en getVictimariosByMedida:', error);
     res.status(500).json({ 
       success: false,
       message: 'Error al obtener victimarios por medida', 

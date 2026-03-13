@@ -10,7 +10,6 @@ body {
     min-height: 100vh;
     background-attachment: fixed;
 }
-
 .botonFiltrar{
     position: absolute;
     top: 11%;
@@ -28,14 +27,12 @@ body {
     transition: All 0.5s ease;
     box-shadow: 0 0 10px rgb(61, 61, 61); 
 }
-
 .botonFiltrar:hover {
     transform: scale(1.05);
     background-image: url(/Frontend/images/fondoBoton.PNG);
     background-size: cover;
     background-position: center;
 }
-
 .botonFiltrar img{
     position: absolute;
     width: 20px;
@@ -43,7 +40,6 @@ body {
     right: 5px;
     margin-right: 10px;
 }  
-
 .botonesFiltrar{
     display: none;
     position: absolute; 
@@ -54,30 +50,25 @@ body {
     transition: all 0.5s ease;
     text-align: center;
 }
-
 .filtrarCedula{
     width: 200px;
     transition: All 0.5s ease;
 }
-
 .filtrarCedula:focus{
     transform: scale(1.05);
     border-color: none;
     transition: All 0.5s ease;
 }
-
 .filtrarNombre{
     border: none;
     width: 375px;
     transition: All 0.5s ease;
 }
-
 .filtrarNombre:focus{
     transform: scale(1.05);
     border-color: none;
     transition: All 0.5s ease;
 }
-
 .botonBorrarFiltro{
     background-color: #ffcccc;
     border: none;
@@ -89,12 +80,10 @@ body {
     transition: All 0.5s ease;
     cursor: pointer;
 }
-
 .botonBorrarFiltro:hover {
     transform: scale(1.1);
     background-color: #ffbaba;
 }
-
 .botonesFiltrar input{
     margin-right: 60px;
     text-align: center;
@@ -108,7 +97,6 @@ body {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 .input {
     position: absolute;
     top: 10%;
@@ -126,7 +114,6 @@ body {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 .botonRegistrar{
     position: absolute;
     top: 11%;
@@ -144,14 +131,12 @@ body {
     transition: All 0.5s ease;
     box-shadow: 0 0 10px rgb(0, 94, 17); 
 }
-
 .botonRegistrar:hover {
     transform: scale(1.05);
     background-image: url(/Frontend/images/fondoBoton.PNG);
     background-size: cover;
     background-position: center;
 }
-
 .botonRegistrar img{
     position: absolute;
     width: 20px;
@@ -159,7 +144,6 @@ body {
     right: 5px;
     margin-right: 10px;
 } 
-
 .tituloMedidas {
     text-align: center;
     width: 100%;
@@ -167,7 +151,6 @@ body {
     margin-bottom: 2%;
     font-size: 165%;
 }
-
 .botonTodos, .botonC1, .botonC2, .botonC3, .botonC4, .botonC5, .botonC6{
     border: none;
     height: 40px;
@@ -178,17 +161,14 @@ body {
     background-color: #138035;
     transition: all 0.3s ease;   
 }
-
 .botonTodos:hover, .botonC1:hover, .botonC2:hover, .botonC3:hover, .botonC4:hover, .botonC5:hover, .botonC6:hover{
     background-color: #eefff3;
     color: black;
 }
-
 .botonComisarias:hover{
     background-color: #ffffff;
     box-shadow: 2px 0 10px rgb(0, 94, 17); 
 }
-
 .seccionBotonesComisarias{
     display: flex;
     position: absolute;
@@ -199,7 +179,6 @@ body {
     z-index: 3;
     transition: All 0.5s ease;
 }
-
 .medidas{
     z-index: 1;
     display: flex;
@@ -215,15 +194,11 @@ body {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     overflow-y: auto;
 }
-
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/*Contraer contenido*/
-
 .botonFiltrar.contraer{
     position: absolute;
     top: 10%;
@@ -241,7 +216,6 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 .botonesFiltrar.contraer {
     display: flex;
     position: relative; 
@@ -250,7 +224,6 @@ input[type=number]::-webkit-outer-spin-button {
     right: 7%;
     transition: All 0.5s ease;
 }
-
 .botonRegistrar.contraer{
     position: absolute;
     top: 10%;
@@ -268,7 +241,6 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 .medidas.contraer{
     display: flex;
     justify-content: center;
@@ -281,9 +253,6 @@ input[type=number]::-webkit-outer-spin-button {
     height: 100%;
     transition: All 0.5s ease;
 }
-
-/*Mostrar inputs para buscar*/
-
 .botonFiltrar.mostrar1{
     position: absolute;
     top: 6%;
@@ -301,7 +270,6 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 .botonRegistrar.mostrar1{
     position: absolute;
     top:6%;
@@ -319,7 +287,6 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 0 10px rgb(0, 94, 17); 
     transition: All 0.5s ease;
 }
-
 @keyframes medidas {
     from {
         transform: translatey(10%);
@@ -330,7 +297,6 @@ input[type=number]::-webkit-outer-spin-button {
         opacity: 1;
     }
 }
-
 @keyframes botones {
     from {
         transform: translatey(100%);
@@ -341,40 +307,34 @@ input[type=number]::-webkit-outer-spin-button {
         opacity: 1;
     }
 }
-
 .medidas {
     animation: medidas 0.8s ease-out;
 }
-
+.contenedor-tabla {
+    animation: medidas 0.8s ease-out;
+}
 .seccionBotonesComisarias{
     animation: medidas 0.8s ease-out;
 }
-
 .botonFiltrar{
     animation: botones 0.8s ease-out;
 }
 .botonRegistrar{
     animation: botones 0.8s ease-out;
 }
-
 .contenedor-tabla {
     overflow-x: auto;
     width: 99%;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
+    user-select: text;
 }
-
 .tabla-medidas {
     width: 100%;
     border-collapse: collapse;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
-
 .tabla-medidas th {
     text-align: center;
     padding: 20px;
@@ -383,7 +343,6 @@ input[type=number]::-webkit-outer-spin-button {
     border-bottom: 3px solid #0d6829;
     border-top: 3px solid #0d6829;
 }
-
 .tabla-medidas td {
     text-align: center;
     align-items: center;
@@ -391,30 +350,24 @@ input[type=number]::-webkit-outer-spin-button {
     border-bottom: 1px solid #e0e0e0;
     font-size: 90%;
     cursor: text;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
-
 .tabla-medidas tbody tr {
     transition: background-color 0.2s ease;
-    pointer-events: auto !important;
+    pointer-events: auto;
 }
-
 .tabla-medidas tbody tr:hover {
     background-color: #f0f9f3;
 }
-
 .tabla-medidas tbody tr:nth-child(even) {
     background-color: #f8f9fa;
 }
-
 .tabla-medidas tbody tr:nth-child(even):hover {
     background-color: #e9f7ec;
 }
-
-/* Estados de las medidas */
 .estado-activo {
     background-color: #d4edda;
     color: #155724;
@@ -423,7 +376,6 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 12px;
     font-weight: bold;
 }
-
 .estado-vencido {
     background-color: #f8d7da;
     color: #721c24;
@@ -432,7 +384,6 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 12px;
     font-weight: bold;
 }
-
 .estado-proximo {
     background-color: #fff3cd;
     color: #856404;
@@ -441,19 +392,224 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 12px;
     font-weight: bold;
 }
-
-/* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+    body {
+        background-attachment: scroll;
+        padding-top: 70px;
+    }
+    .botonRegistrar,
+    .botonRegistrar.contraer,
+    .botonRegistrar.mostrar1 {
+        position: static;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 90%;
+        max-width: 420px;
+        margin: 16px auto 0 auto;
+        left: auto;
+        top: auto;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
+    .botonRegistrar img,
+    .botonRegistrar.contraer img,
+    .botonRegistrar.mostrar1 img {
+        position: static;
+        width: 20px;
+        margin: 0;
+    }
+    .botonFiltrar,
+    .botonFiltrar.contraer,
+    .botonFiltrar.mostrar1 {
+        position: static;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 90%;
+        max-width: 420px;
+        margin: 10px auto 0 auto;
+        left: auto;
+        top: auto;
+        padding: 10px 20px;
+        box-sizing: border-box;
+    }
+    .botonFiltrar img,
+    .botonFiltrar.contraer img,
+    .botonFiltrar.mostrar1 img {
+        position: static;
+        width: 20px;
+        margin: 0;
+    }
+    .botonesFiltrar {
+        display: none; 
+        position: static;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        max-width: 420px;
+        margin: 10px auto 0 auto;
+        left: auto;
+        top: auto;
+        gap: 8px;
+    }
+    .botonesFiltrar.contraer {
+        display: flex;
+        position: static;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        max-width: 420px;
+        margin: 10px auto 0 auto;
+        left: auto;
+        top: auto;
+        gap: 8px;
+    }
+    .botonesFiltrar input,
+    .filtrarCedula,
+    .filtrarNombre {
+        width: 100%;
+        max-width: 100%;
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+    .botonBorrarFiltro {
+        width: 100%;
+        max-width: 100%;
+        padding: 8px 20px;
+        font-size: 85%;
+    }
+    .seccionBotonesComisarias,
+    .seccionBotonesComisarias.contraer {
+        position: static;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(3, auto) auto;
+        width: 90%;
+        max-width: 420px;
+        margin: 14px auto 0 auto;
+        left: auto;
+        top: auto;
+        height: auto;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    .botonTodos {
+        grid-column: 1 / -1;
+        height: 42px;
+        font-size: 15px;
+        border-radius: 0 0 8px 8px;
+    }
+    .botonC1, .botonC2, .botonC3,
+    .botonC4, .botonC5, .botonC6 {
+        height: 42px;
+        font-size: 15px;
+        border-radius: 0;
+        width: 100%;
+    }
+    .botonC1 { border-radius: 8px 0 0 0; }
+    .botonC2 { border-radius: 0 8px 0 0; }
+    .medidas,
+    .medidas.contraer {
+        position: static;
+        display: block;
+        width: 90%;
+        max-width: 100%;
+        margin: 14px auto 40px auto;
+        height: auto;
+        min-height: 300px;
+        left: auto;
+        top: auto;
+        box-sizing: border-box;
+        overflow-y: visible;
+    }
+    .tituloMedidas {
+        position: static;
+        width: 100%;
+        text-align: center;
+        margin: 16px 0 12px 0;
+        font-size: 130%;
+        box-sizing: border-box;
+    }
+    .contenedor-tabla {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
     .tabla-medidas {
+        min-width: 600px;
         font-size: 12px;
     }
-    
     .tabla-medidas th,
     .tabla-medidas td {
         padding: 8px 10px;
     }
+    .input {
+        position: static;
+        display: block;
+        width: 90%;
+        max-width: 420px;
+        margin: 10px auto 0 auto;
+        left: auto;
+        top: auto;
+        box-sizing: border-box;
+    }
 }
-
+@media (max-width: 480px) {
+    body {
+        padding-top: 65px;
+    }
+    .botonFiltrar,
+    .botonFiltrar.contraer,
+    .botonFiltrar.mostrar1,
+    .botonRegistrar,
+    .botonRegistrar.contraer,
+    .botonRegistrar.mostrar1,
+    .input {
+        width: 92%;
+        font-size: 90%;
+        padding: 10px 15px;
+    }
+    .botonesFiltrar.contraer {
+        width: 92%;
+    }
+    .filtrarCedula,
+    .filtrarNombre,
+    .botonesFiltrar input {
+        width: 100%;
+        font-size: 90%;
+        height: 38px;
+    }
+    .seccionBotonesComisarias,
+    .seccionBotonesComisarias.contraer {
+        width: 92%;
+    }
+    .botonTodos,
+    .botonC1, .botonC2, .botonC3,
+    .botonC4, .botonC5, .botonC6 {
+        font-size: 13px;
+        height: 40px;
+    }
+    .medidas,
+    .medidas.contraer {
+        width: 92%;
+        padding: 8px;
+    }
+    .tituloMedidas {
+        font-size: 115%;
+        margin: 12px 0 10px 0;
+    }
+    .tabla-medidas {
+        min-width: 520px;
+        font-size: 11px;
+    }
+    .tabla-medidas th,
+    .tabla-medidas td {
+        padding: 6px 8px;
+    }
+}
 @keyframes movimiento {
     from {
         transform: translatey(10%);
@@ -464,11 +620,9 @@ input[type=number]::-webkit-outer-spin-button {
         opacity: 1;
     }
 }
-
 .fondoCerrarSesion{
     animation: movimiento 0.5s ease-out;
 }
-
 .fondoCerrarSesion {
     display: none;
     position: fixed;
@@ -481,7 +635,6 @@ input[type=number]::-webkit-outer-spin-button {
     align-items: center;
     z-index: 1000;
 }
-
 .cerrarSesion{
     background-color: #fff;
     padding: 20px;
@@ -489,7 +642,6 @@ input[type=number]::-webkit-outer-spin-button {
     text-align: center;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
-
 .boton1cerrarSesion {
     background-color: #138035;
     color: white;
@@ -501,12 +653,10 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 16px;
     transition: all 0.3s ease;
 }
-
 .boton1cerrarSesion:hover {
     background-color: #0d6829;
     transform: translateY(-2px); 
 }
-
 .boton2cerrarSesion {
     padding: 10px 20px;
     margin: 10px;
@@ -516,26 +666,20 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 16px;
     transition: all 0.3s ease;
 }
-
 .boton2cerrarSesion:hover {
     background-color: #c5c5c5;
     transform: translateY(-2px); 
 }
-
 .imgCerrarSesion{
     width: 100px;
     margin-bottom: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
 }
-
-/* Estilos para botones de comisarías activos */
 .seccionBotonesComisarias button.activo {
     background-color: #eefff3;
     color: rgb(0, 0, 0);
 }
-
-/* Estilos para el indicador de carga */
 .cargando {
     display: flex;
     flex-direction: column;
@@ -543,54 +687,42 @@ input[type=number]::-webkit-outer-spin-button {
     justify-content: center;
     padding: 20px;
 }
-
 .cargando span {
     margin-top: 10px;
     color: #666;
     font-size: 14px;
 }
-
-/* Estilos para filas de la tabla */
 .tabla-medidas tbody tr:hover {
     background-color: #f9f9f9;
 }
-
-/* NUEVOS ESTILOS PARA PERMITIR SELECCIÓN DE TEXTO */
 .medidas {
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    pointer-events: auto !important;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    pointer-events: auto;
 }
-
 #cuerpoTabla {
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
-    pointer-events: auto !important;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    pointer-events: auto;
 }
-
 #cuerpoTabla tr {
-    pointer-events: auto !important;
+    pointer-events: auto;
 }
-
 #cuerpoTabla td {
-    pointer-events: auto !important;
-    cursor: text !important;
+    pointer-events: auto;
+    cursor: text;
 }
-
-/* Estilo para las celdas seleccionables */
 .selectable {
-    cursor: text !important;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    -moz-user-select: text !important;
-    -ms-user-select: text !important;
+    cursor: text;
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
 }
-
-/* Estilo para el badge (no seleccionable) */
 .badge-victimas {
     user-select: none;
     pointer-events: none;
@@ -600,35 +732,26 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 14px;
     font-weight: bold;
 }
-
 .badge-victimas.si {
     background-color: #d4edda;
     color: #155724;
 }
-
 .badge-victimas.no {
     background-color: #f8d7da;
     color: #721c24;
 }
-
 .badge-victimas.desconocido {
     background-color: #fff3cd;
     color: #856404;
 }
-
-/* Estilos para la selección de texto */
 ::selection {
     background-color: rgba(19, 128, 53, 0.3);
     color: #000;
 }
-
 ::-moz-selection {
     background-color: rgba(19, 128, 53, 0.3);
     color: #000;
 }
-/* ===== ESTILOS PARA INFORMACIÓN DE REGISTRO (MISMO ESTILO QUE FORMULARIO) ===== */
-
-/* Contenedor de información de registro - Mismo estilo que el formulario */
 .info-registro-medida {
     background-color: #ffffff;
     border-radius: 8px;
@@ -639,15 +762,11 @@ input[type=number]::-webkit-outer-spin-button {
     width: 100%;
     font-family: Arial, sans-serif;
 }
-
-/* Tabla de información de registro */
 .info-registro-medida table {
     width: 100%;
     border-collapse: collapse;
     background-color: #ffffff;
 }
-
-/* Encabezado de la tabla - Mismo estilo que formulario */
 .info-registro-medida thead th {
     background-color: #d8ffe4;
     color: #0d6829;
@@ -657,23 +776,16 @@ input[type=number]::-webkit-outer-spin-button {
     font-weight: bold;
     border-bottom: 2px solid #0d6829;
 }
-
-/* Filas de la tabla */
 .info-registro-medida tbody tr {
     border-bottom: 1px solid #e0e0e0;
 }
-
 .info-registro-medida tbody tr:last-child {
     border-bottom: none;
 }
-
-/* Celdas de la tabla */
 .info-registro-medida td {
     padding: 12px 15px;
     vertical-align: top;
 }
-
-/* Celdas del encabezado (primera columna) */
 .info-registro-medida td:first-child {
     background-color: #f8f9fa;
     font-weight: bold;
@@ -681,46 +793,33 @@ input[type=number]::-webkit-outer-spin-button {
     width: 35%;
     border-right: 1px solid #e0e0e0;
 }
-
-/* Celdas del contenido (segunda columna) */
 .info-registro-medida td:last-child {
     background-color: #ffffff;
     color: #495057;
     width: 65%;
 }
-
-/* Resaltar número de medida */
 .info-registro-medida .numero-medida {
     color: #e74c3c;
     font-weight: bold;
     font-size: 16px;
 }
-
-/* Para pantallas pequeñas */
 @media (max-width: 768px) {
     .info-registro-medida {
         margin: 8px 0 15px 0;
     }
-    
     .info-registro-medida thead th {
         padding: 12px;
         font-size: 14px;
     }
-    
     .info-registro-medida td {
         padding: 10px 12px;
         font-size: 13px;
     }
-    
     .info-registro-medida td:first-child,
     .info-registro-medida td:last-child {
         width: 50%;
     }
 }
-
-/* ===== ESTILOS PARA BOTONES DINÁMICOS ===== */
-
-/* Contenedor de botones */
 .botones-accion-formulario {
     display: flex;
     gap: 15px;
@@ -734,8 +833,6 @@ input[type=number]::-webkit-outer-spin-button {
     background-color: #f8f9fa;
     border-radius: 0 0 8px 8px;
 }
-
-/* Botones */
 .botonEditar, .botonCerrar {
     padding: 12px 30px;
     border: none;
@@ -747,96 +844,81 @@ input[type=number]::-webkit-outer-spin-button {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
-
 .botonEditar {
     background-color: #138035;
     color: white;
 }
-
 .botonEditar:hover {
     background-color: #0d6829;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-
 .botonCerrar {
     background-color: #95a5a6;
     color: white;
 }
-
 .botonCerrar:hover {
     background-color: #7f8c8d;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-
-/* ===== ESTILOS PARA FORMULARIO EN MODO VISUALIZACIÓN ===== */
-
-/* Título del formulario en modo visualización */
 .headerF h2 {
-    margin-bottom: 5px !important;
+    margin-bottom: 5px;
 }
-/* ===== ESTILOS PARA FORMULARIO EN MODO VISUALIZACIÓN ===== */
-
-/* Campos deshabilitados en modo visualización */
 #formularioMedidas input:disabled,
 #formularioMedidas select:disabled,
 #formularioMedidas textarea:disabled,
 #numeroMedida:disabled,
 #añoMedida:disabled,
 #selectComisariaAdmin:disabled {
-    background-color: #f8f9fa !important;
-    color: #495057 !important;
-    border: 1px solid #dee2e6 !important;
-    border-radius: 4px !important;
-    padding: 8px 12px !important;
-    font-size: 14px !important;
-    cursor: not-allowed !important;
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: not-allowed;
 }
-
-
-/* Título del formulario en modo visualización */
 .headerF h2[style*="Visualización"] {
-    color: #2c3e50 !important;
-    font-weight: bold !important;
-    margin-bottom: 15px !important;
-    font-size: 24px !important;
+    color: #2c3e50;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 24px;
 }
-
-/* Secciones del formulario en modo visualización */
 .seccionF h3, .extras h3 {
-    color: #0d6829 !important;
-    font-size: 18px !important;
-    margin: 20px 0 15px 0 !important;
-    padding-bottom: 10px !important;
-    border-bottom: 2px solid #d8ffe4 !important;
+    color: #0d6829;
+    font-size: 18px;
+    margin: 20px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #d8ffe4;
 }
-
-/* Tablas en modo visualización */
 #formularioMedidas table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    margin-bottom: 15px !important;
-    background-color: #ffffff !important;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    background-color: #ffffff;
 }
-
 #formularioMedidas table th {
-    background-color: #d8ffe4 !important;
-    color: #0d6829 !important;
-    padding: 12px 15px !important;
-    text-align: left !important;
-    font-weight: bold !important;
-    border-bottom: 2px solid #0d6829 !important;
+    background-color: #d8ffe4;
+    color: #0d6829;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #0d6829;
 }
-
 #formularioMedidas table td {
-    padding: 10px 15px !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    vertical-align: top !important;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
 }
-
-/* Ocultar mensajes de validación en modo visualización */
 #formularioMedidas .mensaje {
-    display: none !important;
+    display: none;
 }
-
+.campo-edad {
+    background-color: #f5f5f5;  
+    cursor: not-allowed;
+    color: #333;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    opacity: 1;
+}

@@ -136,9 +136,8 @@ module.exports = (sequelize) => {
     },
     aparentescoConVictimario: {
       type: DataTypes.STRING(100),
-      allowNull: false,
-      field: 'aparentescoConVictimario',
-      defaultValue: 'NO ESPECIFICADO'
+      allowNull: true,
+      field: 'aparentescoConVictimario'
     }
   }, {
     tableName: "victimas",
